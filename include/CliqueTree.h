@@ -9,6 +9,7 @@ class CliqueTree
         virtual ~CliqueTree();
     protected:
     private:
+
 };
 
 #endif // CLIQUETREE_H
