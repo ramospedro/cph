@@ -16,7 +16,7 @@ class PercolationVerifier
 
             bool percolate;
 
-            set_intersection(origin, destine)
+            set_intersection(origin, destine);
             set<unsigned> intersect;
             set_intersection(clique1.begin(),clique1.end(),clique2.begin(),clique2.end(), std::inserter(intersect,intersect.begin()));
 

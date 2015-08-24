@@ -1,5 +1,4 @@
 #include <iostream>
-#include <PercolationVerifier.h>
 
 using namespace std;
 
