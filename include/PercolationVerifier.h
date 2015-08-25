@@ -54,8 +54,8 @@ class PercolationVerifier
                 if (!currentTreeNode->left->visited) {
                     if (doTheseCliquesPercolate(*cliqueNodes, currentTreeNode->left->graphNodes, 1) {
                         // if it's a leaf node, then it's a percolating clique and needs to be added to the lastResult list
-                        if (currentTreeNode->left.leaf) {
-                            lastResult.add(currentTreeNode->left.idClique);
+                        if (currentTreeNode->left->leaf) {
+                            lastResult.add(currentTreeNode->left->idClique);
                         } else {
                         // if it's not a leaf, the recursion tree keeps going until it has found one
                             recursivePercolationVerifier(cliqueNodes, currentTreeNode->left);
@@ -65,11 +65,11 @@ class PercolationVerifier
             }
 
             if (currentTreeNode->right != NULL) {
-                if (!currentTreeNode->right.visited) {
+                if (!currentTreeNode->right->visited) {
                     if (doTheseCliquesPercolate(cliqueNodes, currentTreeNode->right->graphNodes)) {
                         // if it's a leaf node, then it's a percolating clique and needs to be added to the lastResult list
-                        if (currentTreeNode->right.leaf) {
-                            lastResult.add(currentTreeNode->right.idClique);
+                        if (currentTreeNode->right->leaf) {
+                            lastResult.add(currentTreeNode->right->idClique);
                         } else {
                         // if it's not a leaf, the recursion tree keeps going until it has found one
                             recursivePercolationVerifier(cliqueNodes, currentTreeNode->right);
@@ -78,7 +78,7 @@ class PercolationVerifier
                 }
             }
 
-            currentTreeNode.visited = true;
+            currentTreeNode->visited = true;
 
             return true;
         }
