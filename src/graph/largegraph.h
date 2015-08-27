@@ -64,6 +64,4 @@ public:
 
 };
 
-#include "largegraph.cpp"
-
 #endif // LARGEGRAPH_H
