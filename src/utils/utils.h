@@ -16,6 +16,4 @@ public:
     static bool isBinary(double a);
 };
 
-#include "utils.cpp"
-
 #endif // UTILS_H

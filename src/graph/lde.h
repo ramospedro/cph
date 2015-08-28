@@ -33,6 +33,5 @@ public:
 
 };
 
-#include "lde.cpp"
 
 #endif // LDE_H

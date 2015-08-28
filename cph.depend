@@ -9,6 +9,68 @@
 1440456406 source:c:\dev\cpp\cph\main.cpp
 	<iostream>
 
-1440460456 source:/home/pedro/Dev/Projects/cpp/cph/main.cpp
+1440732755 source:/home/pedro/Dev/Projects/cpp/cph/main.cpp
 	<iostream>
+	"include/PercolationVerifier.h"
+
+1440460456 source:/home/pedro/Dev/Projects/cpp/cph/src/graph/largegraph.cpp
+	"largegraph.h"
+	<vector>
+
+1440717374 /home/pedro/Dev/Projects/cpp/cph/src/graph/largegraph.h
+	<iostream>
+	<fstream>
+	<limits>
+	<sstream>
+	<vector>
+	<cstdlib>
+	<string.h>
+	<unordered_map>
+	"../utils/utils.h"
+
+1440729565 /home/pedro/Dev/Projects/cpp/cph/src/utils/utils.h
+	<iostream>
+	<math.h>
+	<vector>
+
+1440460456 /home/pedro/Dev/Projects/cpp/cph/src/utils/utils.cpp
+	<iostream>
+	"utils.h"
+
+1440717762 source:/home/pedro/Dev/Projects/cpp/cph/src/graph/lde.cpp
+	"lde.h"
+	"stdlib.h"
+
+1440717743 /home/pedro/Dev/Projects/cpp/cph/src/graph/lde.h
+
+1440460456 source:/home/pedro/Dev/Projects/cpp/cph/src/graph/solution.cpp
+	"solution.h"
+
+1440717743 /home/pedro/Dev/Projects/cpp/cph/src/graph/solution.h
+	<vector>
+	<limits>
+	"lde.h"
+	"../utils/utils.h"
+	"largegraph.h"
+
+1440727043 source:/home/pedro/Dev/Projects/cpp/cph/src/PercolationVerifier.cpp
+	"../include/PercolationVerifier.h"
+
+1440732252 /home/pedro/Dev/Projects/cpp/cph/include/PercolationVerifier.h
+	<set>
+	<list>
+	<algorithm>
+	<iostream>
+
+1440460456 source:/home/pedro/Dev/Projects/cpp/cph/src/utils/modularitylg.cpp
+	"modularitylg.h"
+	<math.h>
+
+1440729555 /home/pedro/Dev/Projects/cpp/cph/src/utils/modularitylg.h
+	"../graph/largegraph.h"
+	"../graph/solution.h"
+
+1440460456 source:/home/pedro/Dev/Projects/cpp/cph/src/utils/utils.cpp
+	<iostream>
+	"utils.h"
 

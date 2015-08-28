@@ -1,4 +1,5 @@
 #include "lde.h"
+#include "stdlib.h"
 
 //O(1)
 template<class T>
