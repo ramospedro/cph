@@ -37,6 +37,9 @@ struct TTree {
 
 list<unsigned*> lastResult;
 
+
+TNode* lastResultParentWithSingleChild;
+
 bool recursivePercolationVerifier(set<unsigned> &cliqueNodes, TNode &currentTreeNode) {
 
     if (currentTreeNode.left != NULL) {
@@ -73,10 +76,43 @@ bool recursivePercolationVerifier(set<unsigned> &cliqueNodes, TNode &currentTree
 }
 
 list<unsigned*> getPercolatingCliques(set<unsigned> *cliqueNodes, TTree *cliqueTree) {
+    //lastResult = -1;
     recursivePercolationVerifier(*cliqueNodes, *cliqueTree->root);
     return lastResult;
 }
 
+// Looks for an empty space to add a child on
+// Basically it looks for a parent node with just one child node
+// Returns the parent node itself
+void recursivellyFindParentWithSigleChild(TNode &currentTreeNode) {
 
+    if (lastResultParentWithSingleChild != NULL) {
+        return;
+    }
+
+    // if only one of the childs is NULL
+    if ((currentTreeNode.left == NULL) ^ (currentTreeNode.right == NULL)) {
+        lastResultParentWithSingleChild = currentTreeNode;
+        return;
+    }
+
+    if (currentTreeNode.left != NULL) {
+        if (!currentTreeNode.left->leaf) {
+            recursivellyFindParentWithSigleChild(currentTreeNode.left);
+        }
+    }
+
+    if (currentTreeNode.right != NULL) {
+        if (!currentTreeNode.right->leaf) {
+            recursivellyFindParentWithSigleChild(currentTreeNode.right);
+        }
+    }
+}
+
+TNode* findParentWithSingleChild() {
+    lastResultParentWithSingleChild = NULL;
+    recursivellyFindParentWithSigleChild(TTree.root);
+    return lastResultParentWithSingleChild;
+}
 
 #endif // PERCOLATIONVERIFIER_H
