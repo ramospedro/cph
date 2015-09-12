@@ -76,7 +76,7 @@ void test2() {
     cliquesList.push_back(clique3);
     cliquesList.push_back(clique4);
 
-    buildCliqueTree(&cliquesList);
+    //buildCliqueTree(&cliquesList);
 
 }
 
@@ -125,10 +125,65 @@ void learn() {
 
 }
 
+void learn2() {
+
+    TNode *nodeA = newTNode();
+    TNode *nodeB = newTNode();
+
+    set<unsigned> *setA = new set<unsigned>;
+    set<unsigned> *setB = new set<unsigned>;
+
+    setA->insert(1);
+    setA->insert(2);
+    setA->insert(3);
+    setA->insert(4);
+
+    setB->insert(3);
+    setB->insert(4);
+    setB->insert(5);
+    setB->insert(6);
+
+    set<unsigned> *uni = setUnion(setA, setB);
+    cout << uni->size() << endl;
+    set<unsigned> *inter = setIntersection(setA, setB);
+    cout << inter->size() << endl << endl;
+
+    set<unsigned> *unionSet = new set<unsigned>;
+    set_union(setA->begin(), setA->end(), setB->begin(), setB->end(), inserter(*unionSet, unionSet->end()));
+    cout << unionSet->size() << endl;
+
+    set<unsigned> *intersect = new set<unsigned>;
+    set_intersection(setA->begin(),setA->end(),setB->begin(),setB->end(), inserter(*intersect,intersect->begin()));
+    cout << intersect->size();
+}
+
+void learn3() {
+
+    list<unsigned> *listA = new list<unsigned>;
+    listA->push_back(1);
+    listA->push_back(2);
+    listA->push_back(3);
+
+    list<unsigned>::iterator it;
+
+
+    for (int i = 0; it != listA->end(); i++) {
+
+        it = next(listA->begin(), i);
+
+        if (it != listA->end()) {
+            cout << *it << endl;
+        }
+
+
+    }
+
+
+}
 
 int main()
 {
 
-    test2();
+    learn3();
     return 0;
 }
