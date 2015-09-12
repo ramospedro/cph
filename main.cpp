@@ -60,24 +60,78 @@ void test2() {
     clique2.insert(4);
 
     set<unsigned> clique3;
-    clique2.insert(2);
-    clique2.insert(3);
-    clique2.insert(4);
+    clique3.insert(4);
+    clique3.insert(5);
+    clique3.insert(6);
 
     set<unsigned> clique4;
-    clique2.insert(2);
-    clique2.insert(3);
-    clique2.insert(4);
+    clique4.insert(5);
+    clique4.insert(6);
+    clique4.insert(7);
 
+    set<unsigned> clique5;
+    clique5.insert(6);
+    clique5.insert(7);
+    clique5.insert(8);
 
-    list<set<unsigned>> cliquesList;
-    cliquesList.push_back(clique1);
-    cliquesList.push_back(clique2);
-    cliquesList.push_back(clique3);
-    cliquesList.push_back(clique4);
+    list<set<unsigned>> *cliquesList = new list<set<unsigned>>;
+    cliquesList->push_back(clique1);
+    cliquesList->push_back(clique2);
+    cliquesList->push_back(clique3);
+    cliquesList->push_back(clique4);
+    cliquesList->push_back(clique5);
 
-    //buildCliqueTree(&cliquesList);
+    TTree *cliqueTree = buildCliqueTree(cliquesList);
 
+    set<unsigned> *graphNodes = cliqueTree->root->graphNodes;
+    for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
+        cout << *i << ", ";
+    }
+
+    cout << endl << endl;
+    graphNodes = cliqueTree->root->left->graphNodes;
+    for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
+        cout << *i << ", ";
+    }
+    cout << endl;
+    graphNodes = cliqueTree->root->left->left->graphNodes;
+    for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
+        cout << *i << ", ";
+    }
+
+    cout << endl;
+    graphNodes = cliqueTree->root->left->right->graphNodes;
+    for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
+        cout << *i << ", ";
+    }
+
+    cout << endl << endl;
+    graphNodes = cliqueTree->root->right->graphNodes;
+    for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
+        cout << *i << ", ";
+    }
+    cout << endl << endl;
+    graphNodes = cliqueTree->root->right->left->graphNodes;
+    for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
+        cout << *i << ", ";
+    }
+
+    cout << endl << endl;
+    graphNodes = cliqueTree->root->right->right->graphNodes;
+    for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
+        cout << *i << ", ";
+    }
+
+    cout << endl;
+    graphNodes = cliqueTree->root->right->right->right->graphNodes;
+    for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
+        cout << *i << ", ";
+    }
+    cout << endl;
+    graphNodes = cliqueTree->root->right->right->left->graphNodes;
+    for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
+        cout << *i << ", ";
+    }
 }
 
 
@@ -184,6 +238,6 @@ void learn3() {
 int main()
 {
 
-    learn3();
+    test2();
     return 0;
 }
