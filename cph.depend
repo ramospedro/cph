@@ -9,9 +9,10 @@
 1440456406 source:c:\dev\cpp\cph\main.cpp
 	<iostream>
 
-1442094754 source:/home/pedro/Dev/Projects/cpp/cph/main.cpp
+1442100250 source:/home/pedro/Dev/Projects/cpp/cph/main.cpp
 	<iostream>
 	"include/PercolationVerifier.h"
+	"include/CommunitiesFinder.h"
 
 1440460456 source:/home/pedro/Dev/Projects/cpp/cph/src/graph/largegraph.cpp
 	"largegraph.h"
@@ -56,7 +57,7 @@
 1440727043 source:/home/pedro/Dev/Projects/cpp/cph/src/PercolationVerifier.cpp
 	"../include/PercolationVerifier.h"
 
-1442094641 /home/pedro/Dev/Projects/cpp/cph/include/PercolationVerifier.h
+1442095327 /home/pedro/Dev/Projects/cpp/cph/include/PercolationVerifier.h
 	<set>
 	<list>
 	<algorithm>
@@ -73,4 +74,11 @@
 1440460456 source:/home/pedro/Dev/Projects/cpp/cph/src/utils/utils.cpp
 	<iostream>
 	"utils.h"
+
+1442100107 /home/pedro/Dev/Projects/cpp/cph/include/CommunitiesFinder.h
+	<set>
+	<list>
+	<algorithm>
+	<iostream>
+	"PercolationVerifier.h"
 

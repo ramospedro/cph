@@ -1,6 +1,6 @@
 #include <iostream>
 #include "include/PercolationVerifier.h"
-
+#include "include/CommunitiesFinder.h"
 
 using namespace std;
 
@@ -38,9 +38,11 @@ void test1() {
     cliquesList->push_back(clique4);
     cliquesList->push_back(clique5);
 
-    TTree *cliqueTree = buildCliqueTree(cliquesList);
+    findCommunities(cliquesList);
 
-    set<unsigned> *graphNodes = cliqueTree->root->graphNodes;
+    //TTree *cliqueTree = buildCliqueTree(cliquesList);
+
+    /*set<unsigned> *graphNodes = cliqueTree->root->graphNodes;
     for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
         cout << *i << ", ";
     }
@@ -89,15 +91,15 @@ void test1() {
     for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
         cout << *i << ", ";
     }
-
-    cout << endl << endl << "Percolação" << endl << endl;
-    list<unsigned> *percolation = getPercolatingCliques(clique1, 0, cliqueTree);
+*/
+    /*cout << endl << endl << "Percolação" << endl << endl;
+    list<unsigned> *percolation = getPercolatingCliques(clique4, 3, cliqueTree);
 
     for (list<unsigned>::iterator it = percolation->begin(); it != percolation->end(); it++) {
 
         cout << *it;
 
-    }
+    }*/
 
 }
 
@@ -195,8 +197,6 @@ void learn3() {
         if (it != listA->end()) {
             cout << *it << endl;
         }
-
-
     }
 
 
