@@ -132,6 +132,16 @@ void test2() {
     for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
         cout << *i << ", ";
     }
+
+    cout << endl << endl << "Percolação" << endl << endl;
+    list<unsigned> *percolation = getPercolatingCliques(&clique1, 0, cliqueTree);
+
+    for (list<unsigned>::iterator it = percolation->begin(); it != percolation->end(); it++) {
+
+        cout << *it;
+
+    }
+
 }
 
 

@@ -54,7 +54,7 @@ struct TTree {
     TNode *root;
 };
 
-list<unsigned*> lastResult;
+list<unsigned> *lastResult;
 
 void printAllSetElements(set<unsigned> *graphNodes) {
     cout << endl;
@@ -67,16 +67,18 @@ void printAllSetElements(set<unsigned> *graphNodes) {
     cout << endl;
 }
 
-bool recursivePercolationVerifier(set<unsigned> *cliqueNodes, TNode *currentTreeNode) {
+bool recursivePercolationVerifier(set<unsigned> *cliqueNodes, unsigned idClique, TNode *currentTreeNode) {
 
     if (currentTreeNode->left != NULL) {
         if (doTheseCliquesPercolate(cliqueNodes, currentTreeNode->left->graphNodes, 2)) {
             // if it's a leaf node, then it's a percolating clique and needs to be added to the lastResult list
             if (currentTreeNode->left->leaf) {
-                lastResult.push_back(&currentTreeNode->left->idClique);
+                if (currentTreeNode->left->idClique != idClique) {
+                    lastResult->push_back(currentTreeNode->left->idClique);
+                }
             } else {
             // if it's not a leaf, the recursion tree keeps going until it has found one
-                recursivePercolationVerifier(cliqueNodes, currentTreeNode->left);
+                recursivePercolationVerifier(cliqueNodes, idClique, currentTreeNode->left);
             }
         }
     }
@@ -85,10 +87,12 @@ bool recursivePercolationVerifier(set<unsigned> *cliqueNodes, TNode *currentTree
         if (doTheseCliquesPercolate(cliqueNodes, currentTreeNode->right->graphNodes, 2)) {
             // if it's a leaf node, then it's a percolating clique and needs to be added to the lastResult list
             if (currentTreeNode->right->leaf) {
-                lastResult.push_back(&currentTreeNode->right->idClique);
+                if (currentTreeNode->right->idClique != idClique) {
+                    lastResult->push_back(currentTreeNode->right->idClique);
+                }
             } else {
             // if it's not a leaf, the recursion tree keeps going until it has found one
-                recursivePercolationVerifier(cliqueNodes, currentTreeNode->right);
+                recursivePercolationVerifier(cliqueNodes, idClique, currentTreeNode->right);
             }
         }
     }
@@ -96,8 +100,9 @@ bool recursivePercolationVerifier(set<unsigned> *cliqueNodes, TNode *currentTree
     return true;
 }
 
-list<unsigned*> getPercolatingCliques(set<unsigned> *cliqueNodes, TTree *cliqueTree) {
-    recursivePercolationVerifier(cliqueNodes, cliqueTree->root);
+list<unsigned> *getPercolatingCliques(set<unsigned> *cliqueNodes, unsigned idClique, TTree *cliqueTree) {
+    lastResult = new list<unsigned>;
+    recursivePercolationVerifier(cliqueNodes, idClique, cliqueTree->root);
     return lastResult;
 }
 
@@ -109,7 +114,7 @@ TNode *newTNode() {
     // quando é parent node não aproveita esse set criado aqui
     tNode->graphNodes = new set<unsigned>();
 
-    tNode->idClique = -1;
+    tNode->idClique = 999999999;
     tNode->leaf = false;
     tNode->left = NULL;
     tNode->right = NULL;
