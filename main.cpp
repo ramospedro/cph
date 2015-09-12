@@ -4,77 +4,34 @@
 
 using namespace std;
 
-/*void test1() {
-    set<unsigned> nodes;
-    nodes.insert(1);
-    nodes.insert(2);
-    nodes.insert(3);
-    nodes.insert(4);
+void test1() {
 
-    set<unsigned> clique1;
-    clique1.insert(1);
-    clique1.insert(2);
-    clique1.insert(3);
+    set<unsigned> *clique1 = new set<unsigned>;
+    clique1->insert(1);
+    clique1->insert(2);
+    clique1->insert(3);
 
-    set<unsigned> clique2;
-    clique2.insert(2);
-    clique2.insert(3);
-    clique2.insert(4);
+    set<unsigned> *clique2 = new set<unsigned>;
+    clique2->insert(2);
+    clique2->insert(3);
+    clique2->insert(4);
 
-    TTree cliqueTree;
-    TNode r;
-    TNode c1;
-    TNode c2;
+    set<unsigned> *clique3 = new set<unsigned>;
+    clique3->insert(4);
+    clique3->insert(5);
+    clique3->insert(6);
 
-    r.left = &c1;
-    r.right = &c2;
-    cliqueTree.root = &r;
+    set<unsigned> *clique4 = new set<unsigned>;
+    clique4->insert(5);
+    clique4->insert(6);
+    clique4->insert(7);
 
-    r.graphNodes = nodes;
-    r.leaf = false;
+    set<unsigned> *clique5 = new set<unsigned>;
+    clique5->insert(6);
+    clique5->insert(7);
+    clique5->insert(8);
 
-    c1.graphNodes = clique1;
-    c1.leaf = true;
-    c1.idClique = 100;
-
-    c2.graphNodes = clique2;
-    c2.leaf = true;
-    c2.idClique = 200;
-
-
-    list<unsigned*> result = getPercolatingCliques(&clique1, &cliqueTree);
-    cout << *result.front();
-    cout << *result.back();
-}*/
-
-void test2() {
-
-    set<unsigned> clique1;
-    clique1.insert(1);
-    clique1.insert(2);
-    clique1.insert(3);
-
-    set<unsigned> clique2;
-    clique2.insert(2);
-    clique2.insert(3);
-    clique2.insert(4);
-
-    set<unsigned> clique3;
-    clique3.insert(4);
-    clique3.insert(5);
-    clique3.insert(6);
-
-    set<unsigned> clique4;
-    clique4.insert(5);
-    clique4.insert(6);
-    clique4.insert(7);
-
-    set<unsigned> clique5;
-    clique5.insert(6);
-    clique5.insert(7);
-    clique5.insert(8);
-
-    list<set<unsigned>> *cliquesList = new list<set<unsigned>>;
+    list<set<unsigned>*> *cliquesList = new list<set<unsigned>*>;
     cliquesList->push_back(clique1);
     cliquesList->push_back(clique2);
     cliquesList->push_back(clique3);
@@ -134,7 +91,7 @@ void test2() {
     }
 
     cout << endl << endl << "Percolação" << endl << endl;
-    list<unsigned> *percolation = getPercolatingCliques(&clique1, 0, cliqueTree);
+    list<unsigned> *percolation = getPercolatingCliques(clique1, 0, cliqueTree);
 
     for (list<unsigned>::iterator it = percolation->begin(); it != percolation->end(); it++) {
 
@@ -248,6 +205,6 @@ void learn3() {
 int main()
 {
 
-    test2();
+    test1();
     return 0;
 }

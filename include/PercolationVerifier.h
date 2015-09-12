@@ -70,7 +70,7 @@ void printAllSetElements(set<unsigned> *graphNodes) {
 bool recursivePercolationVerifier(set<unsigned> *cliqueNodes, unsigned idClique, TNode *currentTreeNode) {
 
     if (currentTreeNode->left != NULL) {
-        if (doTheseCliquesPercolate(cliqueNodes, currentTreeNode->left->graphNodes, 2)) {
+        if (doTheseCliquesPercolate(cliqueNodes, currentTreeNode->left->graphNodes, cliqueNodes->size()-1)) {
             // if it's a leaf node, then it's a percolating clique and needs to be added to the lastResult list
             if (currentTreeNode->left->leaf) {
                 if (currentTreeNode->left->idClique != idClique) {
@@ -84,7 +84,7 @@ bool recursivePercolationVerifier(set<unsigned> *cliqueNodes, unsigned idClique,
     }
 
     if (currentTreeNode->right != NULL) {
-        if (doTheseCliquesPercolate(cliqueNodes, currentTreeNode->right->graphNodes, 2)) {
+        if (doTheseCliquesPercolate(cliqueNodes, currentTreeNode->right->graphNodes, cliqueNodes->size()-1)) {
             // if it's a leaf node, then it's a percolating clique and needs to be added to the lastResult list
             if (currentTreeNode->right->leaf) {
                 if (currentTreeNode->right->idClique != idClique) {
@@ -124,13 +124,13 @@ TNode *newTNode() {
 
 }
 
-TTree* buildCliqueTree(list<set<unsigned>> *cliquesList) {
+TTree* buildCliqueTree(list<set<unsigned>*> *cliquesList) {
 
     list<TNode*> *nodesToBeAddedToTheTree = new list<TNode*>;
 
     TTree *cliqueTree = new TTree;
 
-    list<set<unsigned>>::iterator cliqueIterator;
+    list<set<unsigned>*>::iterator cliqueIterator;
 
     // processes all leafs and creates its parents
    for (int i = 0; cliqueIterator != cliquesList->end(); i+=2) {
@@ -143,7 +143,7 @@ TTree* buildCliqueTree(list<set<unsigned>> *cliquesList) {
 
             newCliqueLeft->idClique = i;
             newCliqueLeft->leaf = true;
-            newCliqueLeft->graphNodes = &*cliqueIterator;
+            newCliqueLeft->graphNodes = *cliqueIterator;
 
             cliqueIterator = next(cliquesList->begin(), i+1);
 
@@ -158,7 +158,7 @@ TTree* buildCliqueTree(list<set<unsigned>> *cliquesList) {
                 newCliqueRight->idClique = i+1;
                 newCliqueRight->leaf = true;
 
-                newCliqueRight->graphNodes = &*cliqueIterator;
+                newCliqueRight->graphNodes = *cliqueIterator;
 
                 TNode *newCliqueParent = newTNode();
                 newCliqueParent->left = newCliqueLeft;
