@@ -5,27 +5,28 @@
 #include <list>
 #include <algorithm>
 #include <iostream>
+#include <unordered_map>
 #include "PercolationVerifier.h"
 
 using namespace std;
 
-list<set<unsigned>*> *findCommunities(list<set<unsigned>*> *cliquesList) {
+unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cliquesList) {
 
-    list<set<unsigned>*> *communities = new list<set<unsigned>*>;
+    unordered_map<unsigned,set<unsigned>*> *communities = new unordered_map<unsigned,set<unsigned>*>;
     TTree *cliqueTree = buildCliqueTree(cliquesList);
     list<list<unsigned>*> *percolations = new list<list<unsigned>*>;
 
     // initializes the commnunities
     // at the beginning, each clique is a different community
     // note that the commnunities index will be the as the clique index
-    int i = 0;
+    unsigned i = 0;
     for (list<set<unsigned>*>::iterator cliqueIterator = cliquesList->begin(); cliqueIterator != cliquesList->end(); cliqueIterator++, i++) {
 
         set<unsigned> *newCommunity = new set<unsigned>;
         for (set<unsigned>::iterator nodeIterator = (*cliqueIterator)->begin(); nodeIterator != (*cliqueIterator)->end(); nodeIterator++) {
             newCommunity->insert(*nodeIterator);
         }
-        communities->push_back(newCommunity);
+        communities->insert({i, newCommunity});
 
         // gets the percolations for this clique
         list<unsigned> *cliquePercolations = getPercolatingCliques(*cliqueIterator, i, cliqueTree);
