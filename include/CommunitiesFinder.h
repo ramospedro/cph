@@ -7,14 +7,16 @@
 #include <iostream>
 #include <unordered_map>
 #include "PercolationVerifier.h"
+#include <vector>
 
 using namespace std;
+
 
 unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cliquesList) {
 
     unordered_map<unsigned,set<unsigned>*> *communities = new unordered_map<unsigned,set<unsigned>*>;
     TTree *cliqueTree = buildCliqueTree(cliquesList);
-    list<list<unsigned>*> *percolations = new list<list<unsigned>*>;
+    vector<set<unsigned>*> *percolations;
 
     // initializes the commnunities
     // at the beginning, each clique is a different community
@@ -29,23 +31,42 @@ unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cl
         communities->insert({i, newCommunity});
 
         // gets the percolations for this clique
-        list<unsigned> *cliquePercolations = getPercolatingCliques(*cliqueIterator, i, cliqueTree);
+        set<unsigned> *cliquePercolations = getPercolatingCliques(*cliqueIterator, i, cliqueTree);
         percolations->push_back(cliquePercolations);
-    }
-
-    i = 0;
-
-    for (list<list<unsigned>*>::iterator cliqueIterator = percolations->begin(); cliqueIterator != percolations->end(); cliqueIterator++, i++) {
-        cout << endl;
-        for (list<unsigned>::iterator nodeIterator = (*cliqueIterator)->begin(); nodeIterator != (*cliqueIterator)->end(); nodeIterator++) {
-            cout << endl << *nodeIterator;
-        }
     }
 
     return communities;
 }
 
-//void mergeCommunities()
+void recursiveInitialModulesCreation
+    (unordered_map<unsigned,set<unsigned>*> *communities, vector<set<unsigned>*> *percolations, set<unsigned> *currentCommunity, set<unsigned> *cliquesInTheCurrentCommunity, unsigned idCliqueToBeProcessed) {
+
+    cliquesInTheCurrentCommunity->insert(idCliqueToBeProcessed);
+
+
+    unordered_map<unsigned,set<unsigned>*>::iterator communityToBeMergedIntoTheCurrentCommunity = communities->find(idCliqueToBeProcessed);
+    currentCommunity = setUnion(currentCommunity, communityToBeMergedIntoTheCurrentCommunity->second);
+    communities->erase(communityToBeMergedIntoTheCurrentCommunity);
+
+    set<unsigned>* percolationsFromTheProcessedClique = percolations->at(idCliqueToBeProcessed);
+    for (set<unsigned>::iterator cliqueIterator = percolationsFromTheProcessedClique->begin(); cliqueIterator != percolationsFromTheProcessedClique->end(); cliqueIterator++) {
+
+        // recursivelly calls the method only if the clique hasn't been merged into this community yet
+        if (cliquesInTheCurrentCommunity->find(*cliqueIterator) != cliquesInTheCurrentCommunity->end()){
+            recursiveInitialModulesCreation(communities, percolations, currentCommunity, cliquesInTheCurrentCommunity, *cliqueIterator);
+        }
+
+    }
+
+}
+
+void createInitialModules(unordered_map<unsigned,set<unsigned>*> *communities, vector<set<unsigned>*> *percolations) {
+
+    for (unordered_map<unsigned,set<unsigned>*>::iterator communityIterator; communityIterator != communities->end(); communityIterator++) {
+        recursiveInitialModulesCreation(communities, percolations, communityIterator->second, new set<unsigned>, communityIterator->first);
+    }
+
+}
 
 
 

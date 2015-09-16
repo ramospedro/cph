@@ -5,6 +5,7 @@
 #include <list>
 #include <algorithm>
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -54,7 +55,7 @@ struct TTree {
     TNode *root;
 };
 
-list<unsigned> *lastResult;
+set<unsigned> *lastResult;
 
 void printAllSetElements(set<unsigned> *graphNodes) {
     cout << endl;
@@ -74,7 +75,7 @@ bool recursivePercolationVerifier(set<unsigned> *cliqueNodes, unsigned idClique,
             // if it's a leaf node, then it's a percolating clique and needs to be added to the lastResult list
             if (currentTreeNode->left->leaf) {
                 if (currentTreeNode->left->idClique != idClique) {
-                    lastResult->push_back(currentTreeNode->left->idClique);
+                    lastResult->insert(currentTreeNode->left->idClique);
                 }
             } else {
             // if it's not a leaf, the recursion tree keeps going until it has found one
@@ -88,7 +89,7 @@ bool recursivePercolationVerifier(set<unsigned> *cliqueNodes, unsigned idClique,
             // if it's a leaf node, then it's a percolating clique and needs to be added to the lastResult list
             if (currentTreeNode->right->leaf) {
                 if (currentTreeNode->right->idClique != idClique) {
-                    lastResult->push_back(currentTreeNode->right->idClique);
+                    lastResult->insert(currentTreeNode->right->idClique);
                 }
             } else {
             // if it's not a leaf, the recursion tree keeps going until it has found one
@@ -100,8 +101,8 @@ bool recursivePercolationVerifier(set<unsigned> *cliqueNodes, unsigned idClique,
     return true;
 }
 
-list<unsigned> *getPercolatingCliques(set<unsigned> *cliqueNodes, unsigned idClique, TTree *cliqueTree) {
-    lastResult = new list<unsigned>;
+set<unsigned> *getPercolatingCliques(set<unsigned> *cliqueNodes, unsigned idClique, TTree *cliqueTree) {
+    lastResult = new set<unsigned>;
     recursivePercolationVerifier(cliqueNodes, idClique, cliqueTree->root);
     return lastResult;
 }
