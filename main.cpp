@@ -38,11 +38,24 @@ void test1() {
     cliquesList->push_back(clique4);
     cliquesList->push_back(clique5);
 
-    findCommunities(cliquesList);
+    unordered_map<unsigned,set<unsigned>*> *communities = findCommunities(cliquesList);
 
-    //TTree *cliqueTree = buildCliqueTree(cliquesList);
+    for (set<unsigned>::iterator itSet = communities->find(0)->second->begin(); itSet != communities->find(0)->second->end(); itSet++) {
+        cout << *itSet << " ";
+    }
 
-    /*set<unsigned> *graphNodes = cliqueTree->root->graphNodes;
+    /*for (unordered_map<unsigned,set<unsigned>*>::iterator it = communities->begin(); it != communities->end(); it++) {
+        cout << endl << endl;
+        cout << "id_community: " << it->first << endl;
+        cout << "nodes: ";
+        for (set<unsigned>::iterator itSet = it->second->begin(); itSet != it->second->end(); itSet++) {
+            cout << *itSet << " ";
+        }
+
+    }*/
+    /*TTree *cliqueTree = buildCliqueTree(cliquesList);
+
+    set<unsigned> *graphNodes = cliqueTree->root->graphNodes;
     for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
         cout << *i << ", ";
     }
@@ -91,11 +104,11 @@ void test1() {
     for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
         cout << *i << ", ";
     }
-*/
-    /*cout << endl << endl << "Percolação" << endl << endl;
-    list<unsigned> *percolation = getPercolatingCliques(clique4, 3, cliqueTree);
 
-    for (list<unsigned>::iterator it = percolation->begin(); it != percolation->end(); it++) {
+    cout << endl << endl << "Percolação" << endl << endl;
+    set<unsigned> *percolation = getPercolatingCliques(clique5, 4, cliqueTree);
+
+    for (set<unsigned>::iterator it = percolation->begin(); it != percolation->end(); it++) {
 
         cout << *it;
 
