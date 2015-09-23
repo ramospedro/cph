@@ -1,8 +1,69 @@
 #include <iostream>
 #include "include/PercolationVerifier.h"
 #include "include/CommunitiesFinder.h"
+#include "src/graph/largegraph.h"
+#include "src/clique/bronkerbosh.h"
+#include <chrono>
 
 using namespace std;
+
+list<set<unsigned>*> *ConvertList(list<set<unsigned>> *listToBeConverted) {
+
+    list<set<unsigned>*> *newList = new list<set<unsigned>*>;
+
+    for (list<set<unsigned>>::iterator listIterator = listToBeConverted->begin(); listIterator != listToBeConverted->end(); listIterator++) {
+        if ((&*listIterator)->size() > 2) {
+            newList->push_back(&*listIterator);
+        }
+
+    }
+
+    return newList;
+}
+
+void test2() {
+
+    LargeGraph lg("/home/pedro/Dropbox/2015-DeteccaoComunidadesSobreposicao (1)/desenvolvimento/instances/normalizadas/email.net");
+    BronKerbosch cl(&lg);
+
+
+    srand(time(NULL));
+    chrono::system_clock::time_point before;
+    before = chrono::system_clock::now();
+
+    cl.execute();
+
+    long long int totalTimeClique = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
+
+    before = chrono::system_clock::now();
+    list<set<unsigned>*> *cliquesList = ConvertList(&cl.cliques);
+    long long int totalTimeConvertList = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
+
+    before = chrono::system_clock::now();
+
+    unordered_map<unsigned,set<unsigned>*> *communities = findCommunities(cliquesList);
+
+    long long int totalTimeCPM = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
+
+    cout << endl << "Communities found" << endl << endl;
+    for (unordered_map<unsigned,set<unsigned>*>::iterator itCom = communities->begin(); itCom != communities->end(); itCom++) {
+        cout << itCom->first << " - ";
+        for (set<unsigned>::iterator itSet = itCom->second->begin(); itSet != itCom->second->end(); itSet++) {
+            cout << *itSet << " ";
+        }
+
+        cout << endl << endl;
+    }
+
+    cout << endl << endl << endl;
+    cout << "Time clique: " << totalTimeClique;
+    cout << endl;
+    cout << "Time CPM: " << totalTimeCPM;
+    cout << endl;
+    cout << "Time Convert List" << totalTimeConvertList;
+}
+
+
 
 void test1() {
 
@@ -51,181 +112,11 @@ void test1() {
         cout << endl << endl;
     }
 
-/*
-    for (unordered_map<unsigned,set<unsigned>*>::iterator it = communities->begin(); it != communities->end(); it++) {
-        cout << endl << endl;
-        cout << "id_community: " << it->first << endl;
-        cout << "nodes: ";
-        for (set<unsigned>::iterator itSet = it->second->begin(); itSet != it->second->end(); itSet++) {
-            cout << *itSet << " ";
-        }
-
-    }*/
-    /*TTree *cliqueTree = buildCliqueTree(cliquesList);
-
-    set<unsigned> *graphNodes = cliqueTree->root->graphNodes;
-    for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
-        cout << *i << ", ";
-    }
-
-    cout << endl << endl;
-    graphNodes = cliqueTree->root->left->graphNodes;
-    for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
-        cout << *i << ", ";
-    }
-    cout << endl;
-    graphNodes = cliqueTree->root->left->left->graphNodes;
-    for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
-        cout << *i << ", ";
-    }
-
-    cout << endl;
-    graphNodes = cliqueTree->root->left->right->graphNodes;
-    for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
-        cout << *i << ", ";
-    }
-
-    cout << endl << endl;
-    graphNodes = cliqueTree->root->right->graphNodes;
-    for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
-        cout << *i << ", ";
-    }
-    cout << endl << endl;
-    graphNodes = cliqueTree->root->right->left->graphNodes;
-    for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
-        cout << *i << ", ";
-    }
-
-    cout << endl << endl;
-    graphNodes = cliqueTree->root->right->right->graphNodes;
-    for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
-        cout << *i << ", ";
-    }
-
-    cout << endl;
-    graphNodes = cliqueTree->root->right->right->right->graphNodes;
-    for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
-        cout << *i << ", ";
-    }
-    cout << endl;
-    graphNodes = cliqueTree->root->right->right->left->graphNodes;
-    for (set<unsigned>::iterator i = graphNodes->begin(); i != graphNodes->end(); i++) {
-        cout << *i << ", ";
-    }
-
-    cout << endl << endl << "Percolação" << endl << endl;
-    set<unsigned> *percolation = getPercolatingCliques(clique5, 4, cliqueTree);
-
-    for (set<unsigned>::iterator it = percolation->begin(); it != percolation->end(); it++) {
-
-        cout << *it;
-
-    }*/
-
-}
-
-
-struct TElement {
-
-    TElement *next;
-    unsigned id;
-
-};
-
-struct TCollection {
-
-    TElement *first;
-
-};
-
-void learn() {
-
-    TCollection *col = new TCollection;
-
-    col->first = new TElement;
-    col->first->id = 0;
-
-    TElement *nav = col->first;
-
-    for (int i = 1; i < 10; i++) {
-
-        TElement *newElement = new TElement;
-        newElement->id = i;
-
-        nav->next = newElement;
-        nav = newElement;
-
-    }
-
-    nav = col->first;
-
-    for (int i = 0; i < 10; i++) {
-
-        cout << nav->id;
-        nav = nav->next;
-
-    }
-
-
-}
-
-void learn2() {
-
-    TNode *nodeA = newTNode();
-    TNode *nodeB = newTNode();
-
-    set<unsigned> *setA = new set<unsigned>;
-    set<unsigned> *setB = new set<unsigned>;
-
-    setA->insert(1);
-    setA->insert(2);
-    setA->insert(3);
-    setA->insert(4);
-
-    setB->insert(3);
-    setB->insert(4);
-    setB->insert(5);
-    setB->insert(6);
-
-    set<unsigned> *uni = setUnion(setA, setB);
-    cout << uni->size() << endl;
-    set<unsigned> *inter = setIntersection(setA, setB);
-    cout << inter->size() << endl << endl;
-
-    set<unsigned> *unionSet = new set<unsigned>;
-    set_union(setA->begin(), setA->end(), setB->begin(), setB->end(), inserter(*unionSet, unionSet->end()));
-    cout << unionSet->size() << endl;
-
-    set<unsigned> *intersect = new set<unsigned>;
-    set_intersection(setA->begin(),setA->end(),setB->begin(),setB->end(), inserter(*intersect,intersect->begin()));
-    cout << intersect->size();
-}
-
-void learn3() {
-
-    list<unsigned> *listA = new list<unsigned>;
-    listA->push_back(1);
-    listA->push_back(2);
-    listA->push_back(3);
-
-    list<unsigned>::iterator it;
-
-
-    for (int i = 0; it != listA->end(); i++) {
-
-        it = next(listA->begin(), i);
-
-        if (it != listA->end()) {
-            cout << *it << endl;
-        }
-    }
-
-
 }
 
 int main()
 {
 
-    test1();
+    test2();
     return 0;
 }

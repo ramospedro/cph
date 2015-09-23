@@ -58,7 +58,18 @@ unordered_map<unsigned,set<unsigned>*> *createInitialModules(unordered_map<unsig
 unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cliquesList) {
 
     unordered_map<unsigned,set<unsigned>*> *communities = new unordered_map<unsigned,set<unsigned>*>;
+
+    srand(time(NULL));
+    chrono::system_clock::time_point before;
+    before = chrono::system_clock::now();
+
+
     TTree *cliqueTree = buildCliqueTree(cliquesList);
+
+    long long int totalTimeBuildTree = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
+
+    cout << endl << endl << "Time spent building the CliqueTree: " << totalTimeBuildTree << endl << endl;
+
     vector<set<unsigned>*> *percolations = new vector<set<unsigned>*>;
 
     // initializes the commnunities
