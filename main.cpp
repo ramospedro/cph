@@ -40,11 +40,19 @@ void test1() {
 
     unordered_map<unsigned,set<unsigned>*> *communities = findCommunities(cliquesList);
 
-    for (set<unsigned>::iterator itSet = communities->find(0)->second->begin(); itSet != communities->find(0)->second->end(); itSet++) {
-        cout << *itSet << " ";
+
+    cout << endl << "Communities found" << endl << endl;
+    for (unordered_map<unsigned,set<unsigned>*>::iterator itCom = communities->begin(); itCom != communities->end(); itCom++) {
+        cout << itCom->first << " - ";
+        for (set<unsigned>::iterator itSet = itCom->second->begin(); itSet != itCom->second->end(); itSet++) {
+            cout << *itSet << " ";
+        }
+
+        cout << endl << endl;
     }
 
-    /*for (unordered_map<unsigned,set<unsigned>*>::iterator it = communities->begin(); it != communities->end(); it++) {
+/*
+    for (unordered_map<unsigned,set<unsigned>*>::iterator it = communities->begin(); it != communities->end(); it++) {
         cout << endl << endl;
         cout << "id_community: " << it->first << endl;
         cout << "nodes: ";

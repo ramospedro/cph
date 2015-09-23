@@ -12,22 +12,23 @@
 using namespace std;
 
 void recursiveInitialModulesCreation
-    (unordered_map<unsigned,set<unsigned>*> *communities, vector<set<unsigned>*> *percolations, set<unsigned> *currentCommunity, set<unsigned> *cliquesInTheCurrentCommunity, unsigned idCliqueToBeProcessed) {
+    (unordered_map<unsigned,set<unsigned>*> *communities, vector<set<unsigned>*> *percolations, unordered_map<unsigned,set<unsigned>*>::iterator currentCommunity, set<unsigned> *cliquesInTheCurrentCommunity, unsigned idCliqueToBeProcessed) {
 
     cliquesInTheCurrentCommunity->insert(idCliqueToBeProcessed);
 
+    if (currentCommunity->first != idCliqueToBeProcessed) {
 
-    unordered_map<unsigned,set<unsigned>*>::iterator communityToBeMergedIntoTheCurrentCommunity = communities->find(idCliqueToBeProcessed);
-    currentCommunity = setUnion(currentCommunity, communityToBeMergedIntoTheCurrentCommunity->second);
+        unordered_map<unsigned,set<unsigned>*>::iterator communityToBeMergedIntoTheCurrentCommunity = communities->find(idCliqueToBeProcessed);
 
-    //communities->erase(communityToBeMergedIntoTheCurrentCommunity);
+        currentCommunity->second = setUnion(currentCommunity->second, communityToBeMergedIntoTheCurrentCommunity->second);
+
+        communities->erase(communityToBeMergedIntoTheCurrentCommunity);
+    }
 
     set<unsigned>* percolationsFromTheProcessedClique = percolations->at(idCliqueToBeProcessed);
     for (set<unsigned>::iterator cliqueIterator = percolationsFromTheProcessedClique->begin(); cliqueIterator != percolationsFromTheProcessedClique->end(); cliqueIterator++) {
-
         // recursivelly calls the method only if the clique hasn't been merged into this community yet
-        if (cliquesInTheCurrentCommunity->find(*cliqueIterator) != cliquesInTheCurrentCommunity->end()){
-
+        if (cliquesInTheCurrentCommunity->find(*cliqueIterator) == cliquesInTheCurrentCommunity->end()){
             recursiveInitialModulesCreation(communities, percolations, currentCommunity, cliquesInTheCurrentCommunity, *cliqueIterator);
         }
 
@@ -37,9 +38,17 @@ void recursiveInitialModulesCreation
 
 unordered_map<unsigned,set<unsigned>*> *createInitialModules(unordered_map<unsigned,set<unsigned>*> *communities, vector<set<unsigned>*> *percolations) {
 
-    for (unordered_map<unsigned,set<unsigned>*>::iterator communityIterator = communities->begin(); communityIterator != communities->end(); communityIterator++) {
+    unsigned communitiesCount = communities->size();
 
-        recursiveInitialModulesCreation(communities, percolations, communityIterator->second, new set<unsigned>, communityIterator->first);
+
+    // REVER se for ficar assim, ver pelo menos a ordem das comunidades que está de tras pra frente, porém o contador começa do 0
+    for (int i = 0; i < communitiesCount; i++) {
+        unordered_map<unsigned,set<unsigned>*>::iterator communityIterator = communities->find(i);
+
+        // not all communities will be found, since they're being removed inside the recursive method
+        if (communityIterator != communities->end()) {
+            recursiveInitialModulesCreation(communities, percolations, communityIterator, new set<unsigned>, communityIterator->first);
+        }
     }
 
     return communities;
