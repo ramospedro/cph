@@ -17,8 +17,8 @@ list<set<unsigned>*> *ConvertList(list<set<unsigned>> *listToBeConverted) {
         }
 
     }
-
     return newList;
+
 }
 
 void test2() {
