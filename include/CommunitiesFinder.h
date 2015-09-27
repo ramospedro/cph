@@ -15,9 +15,7 @@ void recursiveInitialModulesCreation
     (unordered_map<unsigned,set<unsigned>*> *communities, vector<set<unsigned>*> *percolations, unordered_map<unsigned,set<unsigned>*>::iterator currentCommunity, set<unsigned> *cliquesInTheCurrentCommunity, unsigned idCliqueToBeProcessed) {
 
     cliquesInTheCurrentCommunity->insert(idCliqueToBeProcessed);
-
     if (currentCommunity->first != idCliqueToBeProcessed) {
-
         unordered_map<unsigned,set<unsigned>*>::iterator communityToBeMergedIntoTheCurrentCommunity = communities->find(idCliqueToBeProcessed);
 
         currentCommunity->second = setUnion(currentCommunity->second, communityToBeMergedIntoTheCurrentCommunity->second);
@@ -27,7 +25,8 @@ void recursiveInitialModulesCreation
 
     set<unsigned>* percolationsFromTheProcessedClique = percolations->at(idCliqueToBeProcessed);
     for (set<unsigned>::iterator cliqueIterator = percolationsFromTheProcessedClique->begin(); cliqueIterator != percolationsFromTheProcessedClique->end(); cliqueIterator++) {
-        // recursivelly calls the method only if the clique hasn't been merged into this community yet
+        // recursivelly calls the method only if the clique hasn't been merged into any community yet
+
         if (cliquesInTheCurrentCommunity->find(*cliqueIterator) == cliquesInTheCurrentCommunity->end()){
             recursiveInitialModulesCreation(communities, percolations, currentCommunity, cliquesInTheCurrentCommunity, *cliqueIterator);
         }
@@ -55,14 +54,13 @@ unordered_map<unsigned,set<unsigned>*> *createInitialModules(unordered_map<unsig
 
 }
 
-unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cliquesList) {
+unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cliquesList, unsigned maxK) {
 
     unordered_map<unsigned,set<unsigned>*> *communities = new unordered_map<unsigned,set<unsigned>*>;
 
     srand(time(NULL));
     chrono::system_clock::time_point before;
     before = chrono::system_clock::now();
-
 
     TTree *cliqueTree = buildCliqueTree(cliquesList);
 
@@ -76,6 +74,7 @@ unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cl
     // at the beginning, each clique is a different community
     // note that the commnunities index will be the as the clique index
     unsigned i = 0;
+
     for (list<set<unsigned>*>::iterator cliqueIterator = cliquesList->begin(); cliqueIterator != cliquesList->end(); cliqueIterator++, i++) {
 
         set<unsigned> *newCommunity = new set<unsigned>;
@@ -84,8 +83,22 @@ unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cl
         }
         communities->insert({i, newCommunity});
 
+        set<unsigned> *cliquePercolations;
         // gets the percolations for this clique
-        set<unsigned> *cliquePercolations = getPercolatingCliques(*cliqueIterator, i, cliqueTree);
+        cliquePercolations = getPercolatingCliques(*cliqueIterator, i, cliqueTree, maxK);
+                    cout << "Percolations " << i;
+            printAllSetElements(cliquePercolations);
+        /*
+        if ((*cliqueIterator)->size() <= maxK) {
+            cliquePercolations = getPercolatingCliques(*cliqueIterator, i, cliqueTree, maxK);
+            cout << "Percolations " << i;
+            printAllSetElements(cliquePercolations);
+        } else {
+            cliquePercolations = new set<unsigned>;
+        }
+        */
+
+
         percolations->push_back(cliquePercolations);
     }
 
