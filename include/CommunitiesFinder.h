@@ -8,8 +8,78 @@
 #include <unordered_map>
 #include "PercolationVerifier.h"
 #include <vector>
+#include "../src/graph/largegraph.h"
 
 using namespace std;
+
+bool compareSetSizeHighToLow (pair<unsigned,set<unsigned>*> first, pair<unsigned,set<unsigned>*> second) {
+    return first.second->size() > second.second->size();
+}
+
+//[0] internal degree sum [1] external degree sum
+array<unsigned,2> getCommunityDegree(set<unsigned> *community, LargeGraph *graph) {
+
+    array<unsigned,2> degrees {0, 0};
+
+    for (set<unsigned>::iterator nodeIt = community->begin(); nodeIt != community->end(); nodeIt++) {
+        for (unordered_map<unsigned,LargeGraphEdge>::const_iterator edgeIt = graph->adjNodes[*nodeIt].begin(); edgeIt != graph->adjNodes[*nodeIt].end(); edgeIt++) {
+            if (community->find(edgeIt->second.targetNode) != community->end()) {
+                degrees[0]++;
+            } else {
+                degrees[1]++;
+            }
+        }
+    }
+
+    // internal edges are being counted twice
+    degrees[0] = degrees[0]/2;
+    return degrees;
+}
+
+double getModuleFitness(set<unsigned> *module, LargeGraph *graph) {
+
+    array<unsigned,2> moduleDegrees = getCommunityDegree(module, graph);
+    unsigned moduleInternalDegree = moduleDegrees[0];
+    unsigned moduleExternalDegree = moduleDegrees[1];
+
+    double moduleFitness = (double) moduleInternalDegree/(moduleInternalDegree+moduleExternalDegree);
+
+    return moduleFitness;
+}
+
+bool isTheFirstModuleFitnessBetterThanOrEqualTheSecond(set<unsigned> *firstModule, set<unsigned> *secondModule, LargeGraph *graph) {
+
+    bool betterThanOrEqual = false;
+
+    double firstModuleFitness = getModuleFitness(firstModule, graph);
+    double secondModuleFitness = getModuleFitness(secondModule, graph);
+
+    cout << endl << endl << "fitness first " << firstModuleFitness << "  fit sec " << secondModuleFitness << endl << endl;
+    if (firstModuleFitness >= secondModuleFitness) {
+        betterThanOrEqual = true;
+    }
+
+    return betterThanOrEqual;
+}
+
+
+
+
+
+// if it's not better than or equal, returns null
+set<unsigned> *getMergedModulesIfBetterOrEqualFitness(set<unsigned> *firstModule, set<unsigned> *secondModule, LargeGraph *graph) {
+
+    set<unsigned> *mergedModules = setUnion(firstModule, secondModule);
+
+    bool betterThanOrEqual = isTheFirstModuleFitnessBetterThanOrEqualTheSecond(mergedModules, firstModule, graph);
+
+    if (!betterThanOrEqual) {
+        mergedModules = NULL;
+    }
+
+    return mergedModules;
+}
+
 
 void recursiveInitialModulesCreation
     (unordered_map<unsigned,set<unsigned>*> *communities, vector<set<unsigned>*> *percolations, unordered_map<unsigned,set<unsigned>*>::iterator currentCommunity, set<unsigned> *cliquesInTheCurrentCommunity, unsigned idCliqueToBeProcessed) {
@@ -54,7 +124,53 @@ unordered_map<unsigned,set<unsigned>*> *createInitialModules(unordered_map<unsig
 
 }
 
-unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cliquesList, unsigned maxK) {
+void modulesUnion(unordered_map<unsigned,set<unsigned>*> *communities, LargeGraph *graph) {
+
+    list<pair<unsigned,set<unsigned>*>> *communitiesToBeProcessed = new list<pair<unsigned,set<unsigned>*>>;
+
+    for (unordered_map<unsigned,set<unsigned>*>::iterator currentCommunity = communities->begin(); currentCommunity != communities->end(); currentCommunity++) {
+        communitiesToBeProcessed->push_back(*currentCommunity);
+    }
+
+    communitiesToBeProcessed->sort(compareSetSizeHighToLow);
+
+    for(list<pair<unsigned,set<unsigned>*>>::iterator processedCommunity = communitiesToBeProcessed->begin(); processedCommunity != communitiesToBeProcessed->end(); processedCommunity++) {
+
+        unordered_map<unsigned,set<unsigned>*>::iterator community = communities->find(processedCommunity->first);
+
+        // if the module hasn't been merged yet
+        if (community != communities->end()) {
+
+            for(list<pair<unsigned,set<unsigned>*>>::iterator currentCommunity = communitiesToBeProcessed->begin(); currentCommunity != communitiesToBeProcessed->end(); currentCommunity++) {
+
+                if (processedCommunity->first != currentCommunity->first) {
+
+                    unordered_map<unsigned,set<unsigned>*>::iterator communityToBeMerged = communities->find(currentCommunity->first);
+
+                    if (communityToBeMerged != communities->end()) {
+
+                        set<unsigned> *possibleMergedCommunity = getMergedModulesIfBetterOrEqualFitness(community->second, communityToBeMerged->second, graph);
+
+                        if (possibleMergedCommunity != NULL) {
+                            community->second = possibleMergedCommunity;
+                            communities->erase(communityToBeMerged);
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+}
+
+unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cliquesList, unsigned maxK, LargeGraph *graph) {
 
     unordered_map<unsigned,set<unsigned>*> *communities = new unordered_map<unsigned,set<unsigned>*>;
 
@@ -103,6 +219,8 @@ unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cl
     }
 
     createInitialModules(communities, percolations);
+
+    modulesUnion(communities, graph);
 
     return communities;
 }

@@ -60,7 +60,7 @@ void detectCommunities(string netPath, unsigned minK, unsigned maxK) {
     printListSets(cliquesList);
     before = chrono::system_clock::now();
 
-    unordered_map<unsigned,set<unsigned>*> *communities = findCommunities(cliquesList, maxK);
+    unordered_map<unsigned,set<unsigned>*> *communities = findCommunities(cliquesList, maxK, &lg);
 
     long long int totalTimeCPM = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
 
@@ -68,10 +68,20 @@ void detectCommunities(string netPath, unsigned minK, unsigned maxK) {
     for (unordered_map<unsigned,set<unsigned>*>::iterator itCom = communities->begin(); itCom != communities->end(); itCom++) {
         cout << itCom->first << " - ";
         for (set<unsigned>::iterator itSet = itCom->second->begin(); itSet != itCom->second->end(); itSet++) {
-            cout << *itSet + 1 << " ";
+            cout << endl << *itSet + 1 << " edges: ";
+
+            for (unordered_map<unsigned,LargeGraphEdge>::const_iterator edgeIt = lg.adjNodes[*itSet].begin(); edgeIt != lg.adjNodes[*itSet].end(); edgeIt++) {
+                cout << edgeIt->second.targetNode+1 << ", ";
+            }
+            array<unsigned,2> deg = getCommunityDegree(itCom->second, &lg);
+            cout << " int deg " << deg[0] << " - ext deg " << deg[1];
+
+
         }
 
-        cout << endl << endl;
+        cout.precision(15);
+        cout << endl << endl << "Fitness " << std::fixed << getModuleFitness(itCom->second, &lg) << endl << endl;
+
     }
 
     cout << "Communities found: " << communities->size();
@@ -81,6 +91,9 @@ void detectCommunities(string netPath, unsigned minK, unsigned maxK) {
     cout << "Time CPM: " << totalTimeCPM;
     cout << endl;
     cout << "Time Convert List: " << totalTimeConvertList;
+
+
+
 
 }
 
