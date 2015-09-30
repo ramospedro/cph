@@ -40,7 +40,7 @@ list<set<unsigned>*> *CreateCliquesListOrderedBySize(list<set<unsigned>> *clique
     return cliquesOrderedBySize;
 }
 
-void detectCommunities(string netPath, unsigned minK, unsigned maxK) {
+void detectCommunities(string netPath, unsigned minK, unsigned maxK, double alpha) {
 
     LargeGraph lg(netPath);
     BronKerbosch cl(&lg);
@@ -60,11 +60,14 @@ void detectCommunities(string netPath, unsigned minK, unsigned maxK) {
     printListSets(cliquesList);
     before = chrono::system_clock::now();
 
-    unordered_map<unsigned,set<unsigned>*> *communities = findCommunities(cliquesList, maxK, &lg);
+    unordered_map<unsigned,set<unsigned>*> *communities = findCommunities(cliquesList, maxK, &lg, alpha);
 
     long long int totalTimeCPM = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
 
     cout << endl << "Communities found" << endl << endl;
+
+    unordered_map<unsigned,set<unsigned>*> *nodes = getCommunitiesOfEachNode(communities);
+
     for (unordered_map<unsigned,set<unsigned>*>::iterator itCom = communities->begin(); itCom != communities->end(); itCom++) {
         cout << itCom->first << " - ";
         for (set<unsigned>::iterator itSet = itCom->second->begin(); itSet != itCom->second->end(); itSet++) {
@@ -79,10 +82,34 @@ void detectCommunities(string netPath, unsigned minK, unsigned maxK) {
 
         }
 
+        set<unsigned> *neighbors = getNeighborNodes(itCom, &lg);
+        cout << endl << "neighbour nodes: ";
+        for (set<unsigned>::iterator itSet = neighbors->begin(); itSet != neighbors->end(); itSet++) {
+            cout << *itSet+1 << ", ";
+        }
+
+        set<unsigned> *neighborCommunities = getNeighborCommunities(neighbors, itCom, nodes);
+
+        cout << endl << "neighbour communities: ";
+        for (set<unsigned>::iterator itSet = neighborCommunities->begin(); itSet != neighborCommunities->end(); itSet++) {
+            cout << *itSet << ", ";
+        }
+
         cout.precision(15);
-        cout << endl << endl << "Fitness " << std::fixed << getModuleFitness(itCom->second, &lg) << endl << endl;
+        cout << endl << endl << "Fitness " << std::fixed << getModuleFitness(itCom->second, &lg, alpha) << endl << endl;
 
     }
+
+    for (unordered_map<unsigned,set<unsigned>*>::iterator currentNode = nodes->begin(); currentNode != nodes->end(); currentNode++) {
+        cout << endl << "node " << currentNode->first+ 1 << " comunnities: ";
+        for (set<unsigned>::iterator itSet = currentNode->second->begin(); itSet != currentNode->second->end(); itSet++) {
+            cout << *itSet << ", ";
+        }
+    }
+
+    cout << endl << endl;
+
+
 
     cout << "Communities found: " << communities->size();
     cout << endl << endl << endl;

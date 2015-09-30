@@ -9,8 +9,78 @@
 #include "PercolationVerifier.h"
 #include <vector>
 #include "../src/graph/largegraph.h"
+#include "math.h"
 
 using namespace std;
+
+set<unsigned> *getNeighborNodes(unordered_map<unsigned,set<unsigned>*>::iterator community, LargeGraph *graph) {
+
+    set<unsigned> *neighborNodes = new set<unsigned>;
+
+    // iterates over each node from the given community
+    for (set<unsigned>::iterator node = community->second->begin(); node != community->second->end(); node++) {
+
+        for (unordered_map<unsigned,LargeGraphEdge>::const_iterator edgeIt = graph->adjNodes[*node].begin(); edgeIt != graph->adjNodes[*node].end(); edgeIt++) {
+            if (community->second->find(edgeIt->second.targetNode) == community->second->end()) {
+                if (neighborNodes->find(edgeIt->second.targetNode) == neighborNodes->end()) {
+                        neighborNodes->insert(edgeIt->second.targetNode);
+                }
+            }
+        }
+
+    }
+
+    return neighborNodes;
+}
+
+set<unsigned> *getNeighborCommunities(set<unsigned> *neighborNodes, unordered_map<unsigned,set<unsigned>*>::iterator community, unordered_map<unsigned,set<unsigned>*> *nodes) {
+
+    set<unsigned> *neighborCommunities = new set<unsigned>;
+
+    // iterates over each node from the given community
+    for (set<unsigned>::iterator node = neighborNodes->begin(); node != neighborNodes->end(); node++) {
+        unordered_map<unsigned,set<unsigned>*>::iterator nodeIterator = nodes->find(*node);
+
+        // not all nodes bolong to a community
+        if (nodeIterator != nodes->end()) {
+            // iterates over the communities on witch the node belongs in
+            for (set<unsigned>::iterator communityIterator = nodeIterator->second->begin(); communityIterator != nodeIterator->second->end(); communityIterator++) {
+                if (*communityIterator != community->first) {
+                    if (neighborCommunities->find(*communityIterator) == neighborCommunities->end()) {
+                        neighborCommunities->insert(*communityIterator);
+                    }
+                }
+            }
+        }
+    }
+
+    return neighborCommunities;
+}
+
+unordered_map<unsigned,set<unsigned>*> *getCommunitiesOfEachNode(unordered_map<unsigned,set<unsigned>*> *communities) {
+
+    unordered_map<unsigned,set<unsigned>*> *nodes = new unordered_map<unsigned,set<unsigned>*>;
+
+    for (unordered_map<unsigned,set<unsigned>*>::iterator currentCommunity = communities->begin(); currentCommunity != communities->end(); currentCommunity++) {
+
+        for (set<unsigned>::iterator currentNode = currentCommunity->second->begin(); currentNode != currentCommunity->second->end(); currentNode++) {
+
+            unordered_map<unsigned,set<unsigned>*>::iterator nodeIterator = nodes->find(*currentNode);
+
+            if (nodeIterator == nodes->end()) {
+                set<unsigned> *newSet = new set<unsigned>;
+                newSet->insert(currentCommunity->first);
+                nodes->insert({*currentNode, newSet});
+            } else {
+                nodeIterator->second->insert(currentCommunity->first);
+            }
+
+        }
+
+    }
+
+    return nodes;
+}
 
 bool compareSetSizeHighToLow (pair<unsigned,set<unsigned>*> first, pair<unsigned,set<unsigned>*> second) {
     return first.second->size() > second.second->size();
@@ -31,30 +101,28 @@ array<unsigned,2> getCommunityDegree(set<unsigned> *community, LargeGraph *graph
         }
     }
 
-    // internal edges are being counted twice
-    degrees[0] = degrees[0]/2;
     return degrees;
 }
 
-double getModuleFitness(set<unsigned> *module, LargeGraph *graph) {
+double getModuleFitness(set<unsigned> *module, LargeGraph *graph, double alpha) {
 
     array<unsigned,2> moduleDegrees = getCommunityDegree(module, graph);
     unsigned moduleInternalDegree = moduleDegrees[0];
     unsigned moduleExternalDegree = moduleDegrees[1];
 
-    double moduleFitness = (double) moduleInternalDegree/(moduleInternalDegree+moduleExternalDegree);
+    double moduleFitness = (double) moduleInternalDegree/pow(moduleInternalDegree+moduleExternalDegree, alpha);
 
     return moduleFitness;
 }
 
-bool isTheFirstModuleFitnessBetterThanOrEqualTheSecond(set<unsigned> *firstModule, set<unsigned> *secondModule, LargeGraph *graph) {
+bool isTheFirstModuleFitnessBetterThanOrEqualTheSecond(set<unsigned> *firstModule, set<unsigned> *secondModule, LargeGraph *graph, double alpha) {
 
     bool betterThanOrEqual = false;
 
-    double firstModuleFitness = getModuleFitness(firstModule, graph);
-    double secondModuleFitness = getModuleFitness(secondModule, graph);
+    double firstModuleFitness = getModuleFitness(firstModule, graph, alpha);
+    double secondModuleFitness = getModuleFitness(secondModule, graph, alpha);
 
-    cout << endl << endl << "fitness first " << firstModuleFitness << "  fit sec " << secondModuleFitness << endl << endl;
+    //out << endl << endl << "fitness first " << firstModuleFitness << "  fit sec " << secondModuleFitness << endl << endl;
     if (firstModuleFitness >= secondModuleFitness) {
         betterThanOrEqual = true;
     }
@@ -64,14 +132,12 @@ bool isTheFirstModuleFitnessBetterThanOrEqualTheSecond(set<unsigned> *firstModul
 
 
 
-
-
 // if it's not better than or equal, returns null
-set<unsigned> *getMergedModulesIfBetterOrEqualFitness(set<unsigned> *firstModule, set<unsigned> *secondModule, LargeGraph *graph) {
+set<unsigned> *getMergedModulesIfBetterOrEqualFitness(set<unsigned> *firstModule, set<unsigned> *secondModule, LargeGraph *graph, double alpha) {
 
     set<unsigned> *mergedModules = setUnion(firstModule, secondModule);
 
-    bool betterThanOrEqual = isTheFirstModuleFitnessBetterThanOrEqualTheSecond(mergedModules, firstModule, graph);
+    bool betterThanOrEqual = isTheFirstModuleFitnessBetterThanOrEqualTheSecond(mergedModules, firstModule, graph, alpha);
 
     if (!betterThanOrEqual) {
         mergedModules = NULL;
@@ -124,53 +190,104 @@ unordered_map<unsigned,set<unsigned>*> *createInitialModules(unordered_map<unsig
 
 }
 
-void modulesUnion(unordered_map<unsigned,set<unsigned>*> *communities, LargeGraph *graph) {
+void nodesUnion(unordered_map<unsigned,set<unsigned>*> *communities, LargeGraph *graph, unsigned maxIterations, double alpha) {
 
-    list<pair<unsigned,set<unsigned>*>> *communitiesToBeProcessed = new list<pair<unsigned,set<unsigned>*>>;
+    for (unsigned i = 0; i < maxIterations; i++) {
 
-    for (unordered_map<unsigned,set<unsigned>*>::iterator currentCommunity = communities->begin(); currentCommunity != communities->end(); currentCommunity++) {
-        communitiesToBeProcessed->push_back(*currentCommunity);
+        bool iterationGeneratedAlterations = false;
+
+        list<pair<unsigned,set<unsigned>*>> *communitiesToBeProcessed = new list<pair<unsigned,set<unsigned>*>>;
+
+        for (unordered_map<unsigned,set<unsigned>*>::iterator currentCommunity = communities->begin(); currentCommunity != communities->end(); currentCommunity++) {
+            communitiesToBeProcessed->push_back(*currentCommunity);
+        }
+
+        communitiesToBeProcessed->sort(compareSetSizeHighToLow);
+
+        for(list<pair<unsigned,set<unsigned>*>>::iterator processedCommunity = communitiesToBeProcessed->begin(); processedCommunity != communitiesToBeProcessed->end(); processedCommunity++) {
+
+            unordered_map<unsigned,set<unsigned>*>::iterator community = communities->find(processedCommunity->first);
+
+            // if the module hasn't been merged yet
+            if (community != communities->end()) {
+
+                set<unsigned> *neighbourNodes = getNeighborNodes(community, graph);
+
+                for(set<unsigned>::iterator idNeighbourNode = neighbourNodes->begin(); idNeighbourNode != neighbourNodes->end(); idNeighbourNode++) {
+
+                    set<unsigned> *possibleNodeToBeMerged = new set<unsigned>;
+                    possibleNodeToBeMerged->insert(*idNeighbourNode);
+                    set<unsigned> *possibleMergedCommunity = getMergedModulesIfBetterOrEqualFitness(community->second, possibleNodeToBeMerged, graph, alpha);
+
+                    if (possibleMergedCommunity != NULL) {
+                        community->second = possibleMergedCommunity;
+                        iterationGeneratedAlterations = true;
+                    }
+
+                }
+            }
+        }
+
+        if (!iterationGeneratedAlterations) {
+            break;
+        }
     }
 
-    communitiesToBeProcessed->sort(compareSetSizeHighToLow);
+}
 
-    for(list<pair<unsigned,set<unsigned>*>>::iterator processedCommunity = communitiesToBeProcessed->begin(); processedCommunity != communitiesToBeProcessed->end(); processedCommunity++) {
+void modulesUnion(unordered_map<unsigned,set<unsigned>*> *communities, LargeGraph *graph, unsigned maxIterations, double alpha) {
 
-        unordered_map<unsigned,set<unsigned>*>::iterator community = communities->find(processedCommunity->first);
+    for (unsigned i = 0; i < maxIterations; i++) {
 
-        // if the module hasn't been merged yet
-        if (community != communities->end()) {
+        bool iterationGeneratedAlterations = false;
 
-            for(list<pair<unsigned,set<unsigned>*>>::iterator currentCommunity = communitiesToBeProcessed->begin(); currentCommunity != communitiesToBeProcessed->end(); currentCommunity++) {
+        list<pair<unsigned,set<unsigned>*>> *communitiesToBeProcessed = new list<pair<unsigned,set<unsigned>*>>;
 
-                if (processedCommunity->first != currentCommunity->first) {
+        for (unordered_map<unsigned,set<unsigned>*>::iterator currentCommunity = communities->begin(); currentCommunity != communities->end(); currentCommunity++) {
+            communitiesToBeProcessed->push_back(*currentCommunity);
+        }
 
-                    unordered_map<unsigned,set<unsigned>*>::iterator communityToBeMerged = communities->find(currentCommunity->first);
+        communitiesToBeProcessed->sort(compareSetSizeHighToLow);
+
+        for(list<pair<unsigned,set<unsigned>*>>::iterator processedCommunity = communitiesToBeProcessed->begin(); processedCommunity != communitiesToBeProcessed->end(); processedCommunity++) {
+
+            unordered_map<unsigned,set<unsigned>*>::iterator community = communities->find(processedCommunity->first);
+
+            // if the module hasn't been merged yet
+            if (community != communities->end()) {
+
+                unordered_map<unsigned,set<unsigned>*> *nodes = getCommunitiesOfEachNode(communities);
+                set<unsigned> *neighbourNodes = getNeighborNodes(community, graph);
+                set<unsigned> *neighbourCommunities = getNeighborCommunities(neighbourNodes, community, nodes);
+
+                for(set<unsigned>::iterator idNeighbourCommunity = neighbourCommunities->begin(); idNeighbourCommunity != neighbourCommunities->end(); idNeighbourCommunity++) {
+
+                    unordered_map<unsigned,set<unsigned>*>::iterator communityToBeMerged = communities->find(*idNeighbourCommunity);
 
                     if (communityToBeMerged != communities->end()) {
 
-                        set<unsigned> *possibleMergedCommunity = getMergedModulesIfBetterOrEqualFitness(community->second, communityToBeMerged->second, graph);
+                        set<unsigned> *possibleMergedCommunity = getMergedModulesIfBetterOrEqualFitness(community->second, communityToBeMerged->second, graph, alpha);
 
                         if (possibleMergedCommunity != NULL) {
                             community->second = possibleMergedCommunity;
                             communities->erase(communityToBeMerged);
-
+                            iterationGeneratedAlterations = true;
                         }
 
                     }
-
                 }
-
             }
-
         }
 
+        if (!iterationGeneratedAlterations) {
+            break;
+        }
     }
 
 
 }
 
-unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cliquesList, unsigned maxK, LargeGraph *graph) {
+unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cliquesList, unsigned maxK, LargeGraph *graph, double alpha) {
 
     unordered_map<unsigned,set<unsigned>*> *communities = new unordered_map<unsigned,set<unsigned>*>;
 
@@ -220,7 +337,8 @@ unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cl
 
     createInitialModules(communities, percolations);
 
-    modulesUnion(communities, graph);
+    modulesUnion(communities, graph, 1, alpha);
+    nodesUnion(communities, graph, 1, alpha);
 
     return communities;
 }
