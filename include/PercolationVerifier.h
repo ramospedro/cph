@@ -73,7 +73,7 @@ bool recursivePercolationVerifier(set<unsigned> *cliqueNodes, unsigned idClique,
             // if it's a leaf node, then it's a percolating clique and needs to be added to the lastResult list
             if (currentTreeNode->left->leaf) {
                 // REVER quando tiver o visited não precisará mais, pois os de maior tamanho vão primeiro e evita isto
-                if (cliqueNodes->size() == currentTreeNode->left->graphNodes->size() || cliqueNodes->size() >= maxK && cliqueNodes->size() < currentTreeNode->left->graphNodes->size()) {
+                if (cliqueNodes->size() == currentTreeNode->left->graphNodes->size() || cliqueNodes->size() >= maxK && currentTreeNode->left->graphNodes->size() >= maxK) {
                     if (currentTreeNode->left->idClique != idClique) {
                         lastResult->insert(currentTreeNode->left->idClique);
                     }
@@ -90,7 +90,7 @@ bool recursivePercolationVerifier(set<unsigned> *cliqueNodes, unsigned idClique,
             // if it's a leaf node, then it's a percolating clique and needs to be added to the lastResult list
             if (currentTreeNode->right->leaf) {
                 // REVER quando tiver o visited não precisará mais, pois os de maior tamanho vão primeiro e evita isto
-                if (cliqueNodes->size() == currentTreeNode->right->graphNodes->size() || cliqueNodes->size() >= maxK && cliqueNodes->size() < currentTreeNode->right->graphNodes->size()) {
+                if (cliqueNodes->size() == currentTreeNode->right->graphNodes->size() || cliqueNodes->size() >= maxK && currentTreeNode->right->graphNodes->size() >= maxK) {
                     if (currentTreeNode->right->idClique != idClique) {
                         lastResult->insert(currentTreeNode->right->idClique);
                     }

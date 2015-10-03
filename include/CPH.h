@@ -82,7 +82,7 @@ void detectCommunities(string netPath, unsigned minK, unsigned maxK, double alph
 
         }
 
-        set<unsigned> *neighbors = getNeighborNodes(itCom, &lg);
+        /*set<unsigned> *neighbors = getNeighborNodes(itCom, &lg);
         cout << endl << "neighbour nodes: ";
         for (set<unsigned>::iterator itSet = neighbors->begin(); itSet != neighbors->end(); itSet++) {
             cout << *itSet+1 << ", ";
@@ -96,7 +96,7 @@ void detectCommunities(string netPath, unsigned minK, unsigned maxK, double alph
         }
 
         cout.precision(15);
-        cout << endl << endl << "Fitness " << std::fixed << getModuleFitness(itCom->second, &lg, alpha) << endl << endl;
+        cout << endl << endl << "Fitness " << std::fixed << getModuleFitness(itCom->second, &lg, alpha) << endl << endl;*/
 
     }
 

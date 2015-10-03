@@ -154,6 +154,16 @@ void recursiveInitialModulesCreation
     if (currentCommunity->first != idCliqueToBeProcessed) {
         unordered_map<unsigned,set<unsigned>*>::iterator communityToBeMergedIntoTheCurrentCommunity = communities->find(idCliqueToBeProcessed);
 
+        if (communityToBeMergedIntoTheCurrentCommunity == communities->end()) {
+
+            cout << "fudeu aqui " << idCliqueToBeProcessed;
+            exit(0);
+        }
+
+        if (idCliqueToBeProcessed == 2016) {
+            cout << "chamou o 2016";
+        }
+
         currentCommunity->second = setUnion(currentCommunity->second, communityToBeMergedIntoTheCurrentCommunity->second);
 
         communities->erase(communityToBeMergedIntoTheCurrentCommunity);
@@ -164,6 +174,10 @@ void recursiveInitialModulesCreation
         // recursivelly calls the method only if the clique hasn't been merged into any community yet
 
         if (cliquesInTheCurrentCommunity->find(*cliqueIterator) == cliquesInTheCurrentCommunity->end()){
+
+            if (*cliqueIterator == 2016) {
+                cout << "vai chamar o 2016 pela recursive";
+            }
             recursiveInitialModulesCreation(communities, percolations, currentCommunity, cliquesInTheCurrentCommunity, *cliqueIterator);
         }
 
@@ -182,7 +196,11 @@ unordered_map<unsigned,set<unsigned>*> *createInitialModules(unordered_map<unsig
 
         // not all communities will be found, since they're being removed inside the recursive method
         if (communityIterator != communities->end()) {
+            if (communityIterator->first == 2016) {
+                cout << "vai chamar o 2016 pela lista";
+            }
             recursiveInitialModulesCreation(communities, percolations, communityIterator, new set<unsigned>, communityIterator->first);
+
         }
     }
 
@@ -319,8 +337,8 @@ unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cl
         set<unsigned> *cliquePercolations;
         // gets the percolations for this clique
         cliquePercolations = getPercolatingCliques(*cliqueIterator, i, cliqueTree, maxK);
-                    cout << "Percolations " << i;
-            printAllSetElements(cliquePercolations);
+        //cout << "Percolations " << i;
+        //printAllSetElements(cliquePercolations);
         /*
         if ((*cliqueIterator)->size() <= maxK) {
             cliquePercolations = getPercolatingCliques(*cliqueIterator, i, cliqueTree, maxK);
