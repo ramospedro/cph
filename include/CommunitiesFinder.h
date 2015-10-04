@@ -305,7 +305,7 @@ void modulesUnion(unordered_map<unsigned,set<unsigned>*> *communities, LargeGrap
 
 }
 
-unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cliquesList, unsigned maxK, LargeGraph *graph, double alpha) {
+unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cliquesList, LargeGraph *graph, double alpha) {
 
     unordered_map<unsigned,set<unsigned>*> *communities = new unordered_map<unsigned,set<unsigned>*>;
 
@@ -336,19 +336,9 @@ unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cl
 
         set<unsigned> *cliquePercolations;
         // gets the percolations for this clique
-        cliquePercolations = getPercolatingCliques(*cliqueIterator, i, cliqueTree, maxK);
-        //cout << "Percolations " << i;
-        //printAllSetElements(cliquePercolations);
-        /*
-        if ((*cliqueIterator)->size() <= maxK) {
-            cliquePercolations = getPercolatingCliques(*cliqueIterator, i, cliqueTree, maxK);
-            cout << "Percolations " << i;
-            printAllSetElements(cliquePercolations);
-        } else {
-            cliquePercolations = new set<unsigned>;
-        }
-        */
-
+        cliquePercolations = getPercolatingCliques(*cliqueIterator, i, cliqueTree);
+        cout << "Percolations " << i;
+        printAllSetElements(cliquePercolations);
 
         percolations->push_back(cliquePercolations);
     }

@@ -40,7 +40,7 @@ list<set<unsigned>*> *CreateCliquesListOrderedBySize(list<set<unsigned>> *clique
     return cliquesOrderedBySize;
 }
 
-void detectCommunities(string netPath, unsigned minK, unsigned maxK, double alpha) {
+void detectCommunities(string netPath, unsigned minK, double alpha) {
 
     LargeGraph lg(netPath);
     BronKerbosch cl(&lg);
@@ -60,7 +60,7 @@ void detectCommunities(string netPath, unsigned minK, unsigned maxK, double alph
     printListSets(cliquesList);
     before = chrono::system_clock::now();
 
-    unordered_map<unsigned,set<unsigned>*> *communities = findCommunities(cliquesList, maxK, &lg, alpha);
+    unordered_map<unsigned,set<unsigned>*> *communities = findCommunities(cliquesList, &lg, alpha);
 
     long long int totalTimeCPM = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
 
@@ -69,7 +69,7 @@ void detectCommunities(string netPath, unsigned minK, unsigned maxK, double alph
     unordered_map<unsigned,set<unsigned>*> *nodes = getCommunitiesOfEachNode(communities);
 
     for (unordered_map<unsigned,set<unsigned>*>::iterator itCom = communities->begin(); itCom != communities->end(); itCom++) {
-        cout << itCom->first << " - ";
+        cout << endl << endl << itCom->first << " - ";
         for (set<unsigned>::iterator itSet = itCom->second->begin(); itSet != itCom->second->end(); itSet++) {
             cout << endl << *itSet + 1 << " edges: ";
 
@@ -106,6 +106,8 @@ void detectCommunities(string netPath, unsigned minK, unsigned maxK, double alph
             cout << *itSet << ", ";
         }
     }
+
+
 
     cout << endl << endl;
 

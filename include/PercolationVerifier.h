@@ -66,21 +66,21 @@ void printAllSetElements(set<unsigned> *graphNodes) {
     cout << endl;
 }
 
-bool recursivePercolationVerifier(set<unsigned> *cliqueNodes, unsigned idClique, TNode *currentTreeNode, unsigned maxK) {
+bool recursivePercolationVerifier(set<unsigned> *cliqueNodes, unsigned idClique, TNode *currentTreeNode) {
 
     if (currentTreeNode->left != NULL) {
         if (doTheseCliquesPercolate(cliqueNodes, currentTreeNode->left->graphNodes, cliqueNodes->size()-1)) {
             // if it's a leaf node, then it's a percolating clique and needs to be added to the lastResult list
             if (currentTreeNode->left->leaf) {
                 // REVER quando tiver o visited não precisará mais, pois os de maior tamanho vão primeiro e evita isto
-                if (cliqueNodes->size() == currentTreeNode->left->graphNodes->size() || cliqueNodes->size() >= maxK && currentTreeNode->left->graphNodes->size() >= maxK) {
+                if (cliqueNodes->size() == currentTreeNode->left->graphNodes->size()) {
                     if (currentTreeNode->left->idClique != idClique) {
                         lastResult->insert(currentTreeNode->left->idClique);
                     }
                 }
             } else {
             // if it's not a leaf, the recursion tree keeps going until it has found one
-                recursivePercolationVerifier(cliqueNodes, idClique, currentTreeNode->left, maxK);
+                recursivePercolationVerifier(cliqueNodes, idClique, currentTreeNode->left);
             }
         }
     }
@@ -90,14 +90,14 @@ bool recursivePercolationVerifier(set<unsigned> *cliqueNodes, unsigned idClique,
             // if it's a leaf node, then it's a percolating clique and needs to be added to the lastResult list
             if (currentTreeNode->right->leaf) {
                 // REVER quando tiver o visited não precisará mais, pois os de maior tamanho vão primeiro e evita isto
-                if (cliqueNodes->size() == currentTreeNode->right->graphNodes->size() || cliqueNodes->size() >= maxK && currentTreeNode->right->graphNodes->size() >= maxK) {
+                if (cliqueNodes->size() == currentTreeNode->right->graphNodes->size()) {
                     if (currentTreeNode->right->idClique != idClique) {
                         lastResult->insert(currentTreeNode->right->idClique);
                     }
                 }
             } else {
             // if it's not a leaf, the recursion tree keeps going until it has found one
-                recursivePercolationVerifier(cliqueNodes, idClique, currentTreeNode->right, maxK);
+                recursivePercolationVerifier(cliqueNodes, idClique, currentTreeNode->right);
             }
         }
     }
@@ -105,9 +105,9 @@ bool recursivePercolationVerifier(set<unsigned> *cliqueNodes, unsigned idClique,
     return true;
 }
 
-set<unsigned> *getPercolatingCliques(set<unsigned> *cliqueNodes, unsigned idClique, TTree *cliqueTree, unsigned maxK) {
+set<unsigned> *getPercolatingCliques(set<unsigned> *cliqueNodes, unsigned idClique, TTree *cliqueTree) {
     lastResult = new set<unsigned>;
-    recursivePercolationVerifier(cliqueNodes, idClique, cliqueTree->root, maxK);
+    recursivePercolationVerifier(cliqueNodes, idClique, cliqueTree->root);
     return lastResult;
 }
 
