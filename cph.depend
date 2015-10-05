@@ -9,7 +9,7 @@
 1440456406 source:c:\dev\cpp\cph\main.cpp
 	<iostream>
 
-1443901395 source:/home/pedro/Dev/Projects/cpp/cph/main.cpp
+1443986961 source:/home/pedro/Dev/Projects/cpp/cph/main.cpp
 	<iostream>
 	"include/CPH.h"
 
@@ -56,7 +56,7 @@
 1440727043 source:/home/pedro/Dev/Projects/cpp/cph/src/PercolationVerifier.cpp
 	"../include/PercolationVerifier.h"
 
-1443900071 /home/pedro/Dev/Projects/cpp/cph/include/PercolationVerifier.h
+1443984912 /home/pedro/Dev/Projects/cpp/cph/include/PercolationVerifier.h
 	<set>
 	<list>
 	<algorithm>
@@ -76,7 +76,7 @@
 	<iostream>
 	"utils.h"
 
-1443901439 /home/pedro/Dev/Projects/cpp/cph/include/CommunitiesFinder.h
+1443986585 /home/pedro/Dev/Projects/cpp/cph/include/CommunitiesFinder.h
 	<set>
 	<list>
 	<algorithm>
@@ -86,6 +86,7 @@
 	<vector>
 	"../src/graph/largegraph.h"
 	"math.h"
+	<chrono>
 
 1442976618 /home/pedro/Dev/Projects/cpp/cph/src/clique/bronkerbosh.h
 	"../graph/largegraph.h"
@@ -104,11 +105,56 @@
 1442976618 source:/home/pedro/Dev/Projects/cpp/cph/src/clique/bronkerbosh.cpp
 	"bronkerbosh.h"
 
-1443901069 /home/pedro/Dev/Projects/cpp/cph/include/CPH.h
+1443986441 /home/pedro/Dev/Projects/cpp/cph/include/CPH.h
 	<iostream>
 	"PercolationVerifier.h"
 	"CommunitiesFinder.h"
 	"../src/graph/largegraph.h"
-	"../src/clique/bronkerbosh.h"
+	"../src/clique/bronkerbosch.h"
 	<chrono>
+
+1443117333 source:/home/pedro/Dev/Projects/cpp/cph/src/clique/bkcliqueremove.cpp
+	"bkcliqueremove.h"
+
+1443985290 /home/pedro/Dev/Projects/cpp/cph/src/clique/bkcliqueremove.h
+	"cliquealgorithm.h"
+
+1443985290 /home/pedro/Dev/Projects/cpp/cph/src/clique/cliquealgorithm.h
+	"../graph/largegraph.h"
+	<set>
+	<list>
+	<vector>
+	<unordered_map>
+	<iostream>
+	<algorithm>
+	<iterator>
+	<stdlib.h>
+	<typeinfo>
+
+1443115886 source:/home/pedro/Dev/Projects/cpp/cph/src/clique/bkrandomneighbors.cpp
+	"bkrandomneighbors.h"
+
+1443985290 /home/pedro/Dev/Projects/cpp/cph/src/clique/bkrandomneighbors.h
+	"cliquealgorithm.h"
+
+1443029760 source:/home/pedro/Dev/Projects/cpp/cph/src/clique/bronkerbosch.cpp
+	"bronkerbosch.h"
+
+1443985290 /home/pedro/Dev/Projects/cpp/cph/src/clique/bronkerbosch.h
+	"cliquealgorithm.h"
+
+1443029760 source:/home/pedro/Dev/Projects/cpp/cph/src/clique/bronkerboschpivot.cpp
+	"bronkerboschpivot.h"
+
+1443985290 /home/pedro/Dev/Projects/cpp/cph/src/clique/bronkerboschpivot.h
+	"cliquealgorithm.h"
+
+1443116519 source:/home/pedro/Dev/Projects/cpp/cph/src/clique/cliquealgorithm.cpp
+	"cliquealgorithm.h"
+
+1443030773 source:/home/pedro/Dev/Projects/cpp/cph/src/clique/cliquesearcher.cpp
+	"cliquesearcher.h"
+
+1443985290 /home/pedro/Dev/Projects/cpp/cph/src/clique/cliquesearcher.h
+	"cliquealgorithm.h"
 

@@ -10,6 +10,7 @@
 #include <vector>
 #include "../src/graph/largegraph.h"
 #include "math.h"
+#include <chrono>
 
 using namespace std;
 
@@ -174,10 +175,6 @@ void recursiveInitialModulesCreation
         // recursivelly calls the method only if the clique hasn't been merged into any community yet
 
         if (cliquesInTheCurrentCommunity->find(*cliqueIterator) == cliquesInTheCurrentCommunity->end()){
-
-            if (*cliqueIterator == 2016) {
-                cout << "vai chamar o 2016 pela recursive";
-            }
             recursiveInitialModulesCreation(communities, percolations, currentCommunity, cliquesInTheCurrentCommunity, *cliqueIterator);
         }
 
@@ -196,11 +193,7 @@ unordered_map<unsigned,set<unsigned>*> *createInitialModules(unordered_map<unsig
 
         // not all communities will be found, since they're being removed inside the recursive method
         if (communityIterator != communities->end()) {
-            if (communityIterator->first == 2016) {
-                cout << "vai chamar o 2016 pela lista";
-            }
             recursiveInitialModulesCreation(communities, percolations, communityIterator, new set<unsigned>, communityIterator->first);
-
         }
     }
 
@@ -317,7 +310,7 @@ unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cl
 
     long long int totalTimeBuildTree = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
 
-    cout << endl << endl << "Time spent building the CliqueTree: " << totalTimeBuildTree << endl << endl;
+    before = chrono::system_clock::now();
 
     vector<set<unsigned>*> *percolations = new vector<set<unsigned>*>;
 
@@ -343,10 +336,25 @@ unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cl
         percolations->push_back(cliquePercolations);
     }
 
-    createInitialModules(communities, percolations);
+    long long int totalTimeGetPercolations = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
 
+    before = chrono::system_clock::now();
+    createInitialModules(communities, percolations);
+    long long int totalTimeCreateCliqueModules = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
+
+    before = chrono::system_clock::now();
     modulesUnion(communities, graph, 1, alpha);
+    long long int totalTimeModulesUnion = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
+
+    before = chrono::system_clock::now();
     nodesUnion(communities, graph, 1, alpha);
+    long long int totalTimeNodesUnion = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
+
+    cout << endl << "Time spent building the CliqueTree: " << totalTimeBuildTree;
+    cout << endl << "Time spent getting the Percolations: " << totalTimeGetPercolations;
+    cout << endl << "Time spent creating the clique modules: " << totalTimeCreateCliqueModules;
+    cout << endl << "Time spent in modules union: " << totalTimeModulesUnion;
+    cout << endl << "Time spent in nodes union: " << totalTimeNodesUnion << endl << endl;
 
     return communities;
 }

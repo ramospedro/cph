@@ -5,7 +5,7 @@
 #include "PercolationVerifier.h"
 #include "CommunitiesFinder.h"
 #include "../src/graph/largegraph.h"
-#include "../src/clique/bronkerbosh.h"
+#include "../src/clique/bronkerbosch.h"
 #include <chrono>
 
 bool compareSetSize (set<unsigned> *first, set<unsigned> *second) {
@@ -45,7 +45,6 @@ void detectCommunities(string netPath, unsigned minK, double alpha) {
     LargeGraph lg(netPath);
     BronKerbosch cl(&lg);
 
-
     srand(time(NULL));
     chrono::system_clock::time_point before;
     before = chrono::system_clock::now();
@@ -66,7 +65,7 @@ void detectCommunities(string netPath, unsigned minK, double alpha) {
 
     cout << endl << "Communities found" << endl << endl;
 
-    unordered_map<unsigned,set<unsigned>*> *nodes = getCommunitiesOfEachNode(communities);
+    /*unordered_map<unsigned,set<unsigned>*> *nodes = getCommunitiesOfEachNode(communities);
 
     for (unordered_map<unsigned,set<unsigned>*>::iterator itCom = communities->begin(); itCom != communities->end(); itCom++) {
         cout << endl << endl << itCom->first << " - ";
@@ -82,7 +81,7 @@ void detectCommunities(string netPath, unsigned minK, double alpha) {
 
         }
 
-        /*set<unsigned> *neighbors = getNeighborNodes(itCom, &lg);
+        set<unsigned> *neighbors = getNeighborNodes(itCom, &lg);
         cout << endl << "neighbour nodes: ";
         for (set<unsigned>::iterator itSet = neighbors->begin(); itSet != neighbors->end(); itSet++) {
             cout << *itSet+1 << ", ";
@@ -96,22 +95,18 @@ void detectCommunities(string netPath, unsigned minK, double alpha) {
         }
 
         cout.precision(15);
-        cout << endl << endl << "Fitness " << std::fixed << getModuleFitness(itCom->second, &lg, alpha) << endl << endl;*/
+        cout << endl << endl << "Fitness " << std::fixed << getModuleFitness(itCom->second, &lg, alpha) << endl << endl;
 
-    }
+    }*/
 
-    for (unordered_map<unsigned,set<unsigned>*>::iterator currentNode = nodes->begin(); currentNode != nodes->end(); currentNode++) {
+    /*for (unordered_map<unsigned,set<unsigned>*>::iterator currentNode = nodes->begin(); currentNode != nodes->end(); currentNode++) {
         cout << endl << "node " << currentNode->first+ 1 << " comunnities: ";
         for (set<unsigned>::iterator itSet = currentNode->second->begin(); itSet != currentNode->second->end(); itSet++) {
             cout << *itSet << ", ";
         }
-    }
-
-
+    }*/
 
     cout << endl << endl;
-
-
 
     cout << "Communities found: " << communities->size();
     cout << endl << endl << endl;
