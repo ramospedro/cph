@@ -157,12 +157,8 @@ void recursiveInitialModulesCreation
 
         if (communityToBeMergedIntoTheCurrentCommunity == communities->end()) {
 
-            cout << "fudeu aqui " << idCliqueToBeProcessed;
+            cout << "Não vai cair aqui, não vai cair aqui, não vai cair aqui..." << idCliqueToBeProcessed;
             exit(0);
-        }
-
-        if (idCliqueToBeProcessed == 2016) {
-            cout << "chamou o 2016";
         }
 
         currentCommunity->second = setUnion(currentCommunity->second, communityToBeMergedIntoTheCurrentCommunity->second);
@@ -248,6 +244,23 @@ void nodesUnion(unordered_map<unsigned,set<unsigned>*> *communities, LargeGraph 
 
 void modulesUnion(unordered_map<unsigned,set<unsigned>*> *communities, LargeGraph *graph, unsigned maxIterations, double alpha) {
 
+    srand(time(NULL));
+    chrono::system_clock::time_point before;
+    chrono::system_clock::time_point before2;
+    chrono::system_clock::time_point before3;
+
+    long long int totalTimeGetCommunitiesEachNode = 0;
+    long long int totalTimeGetNeighbourNodes = 0;
+    long long int totalTimeGetNeighbourCommunities = 0;
+    long long int totalTimeForNeighbour = 0;
+    long long int totalTimeGetMerged = 0;
+    long long int totalTimeFindFor = 0;
+    long long int totalTimeIfFor = 0;
+
+    long long int tempTime = 0;
+
+    int totalTimesFor = 0;
+
     for (unsigned i = 0; i < maxIterations; i++) {
 
         bool iterationGeneratedAlterations = false;
@@ -260,6 +273,7 @@ void modulesUnion(unordered_map<unsigned,set<unsigned>*> *communities, LargeGrap
 
         communitiesToBeProcessed->sort(compareSetSizeHighToLow);
 
+
         for(list<pair<unsigned,set<unsigned>*>>::iterator processedCommunity = communitiesToBeProcessed->begin(); processedCommunity != communitiesToBeProcessed->end(); processedCommunity++) {
 
             unordered_map<unsigned,set<unsigned>*>::iterator community = communities->find(processedCommunity->first);
@@ -271,6 +285,7 @@ void modulesUnion(unordered_map<unsigned,set<unsigned>*> *communities, LargeGrap
                 set<unsigned> *neighbourNodes = getNeighborNodes(community, graph);
                 set<unsigned> *neighbourCommunities = getNeighborCommunities(neighbourNodes, community, nodes);
 
+                before = chrono::system_clock::now();
                 for(set<unsigned>::iterator idNeighbourCommunity = neighbourCommunities->begin(); idNeighbourCommunity != neighbourCommunities->end(); idNeighbourCommunity++) {
 
                     unordered_map<unsigned,set<unsigned>*>::iterator communityToBeMerged = communities->find(*idNeighbourCommunity);
@@ -284,9 +299,11 @@ void modulesUnion(unordered_map<unsigned,set<unsigned>*> *communities, LargeGrap
                             communities->erase(communityToBeMerged);
                             iterationGeneratedAlterations = true;
                         }
-
                     }
+
                 }
+                tempTime = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
+                totalTimeForNeighbour += tempTime;
             }
         }
 
@@ -295,7 +312,7 @@ void modulesUnion(unordered_map<unsigned,set<unsigned>*> *communities, LargeGrap
         }
     }
 
-
+    cout << endl << "totalTimeForNeighbour: " << totalTimeForNeighbour;
 }
 
 unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cliquesList, LargeGraph *graph, double alpha) {
@@ -330,8 +347,8 @@ unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cl
         set<unsigned> *cliquePercolations;
         // gets the percolations for this clique
         cliquePercolations = getPercolatingCliques(*cliqueIterator, i, cliqueTree);
-        cout << "Percolations " << i;
-        printAllSetElements(cliquePercolations);
+        //cout << "Percolations " << i;
+        //printAllSetElements(cliquePercolations);
 
         percolations->push_back(cliquePercolations);
     }

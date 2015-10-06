@@ -56,7 +56,7 @@ void detectCommunities(string netPath, unsigned minK, double alpha) {
     before = chrono::system_clock::now();
     list<set<unsigned>*> *cliquesList = CreateCliquesListOrderedBySize(&cl.cliques, minK);
     long long int totalTimeConvertList = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
-    printListSets(cliquesList);
+
     before = chrono::system_clock::now();
 
     unordered_map<unsigned,set<unsigned>*> *communities = findCommunities(cliquesList, &lg, alpha);

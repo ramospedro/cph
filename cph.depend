@@ -9,7 +9,7 @@
 1440456406 source:c:\dev\cpp\cph\main.cpp
 	<iostream>
 
-1443986961 source:/home/pedro/Dev/Projects/cpp/cph/main.cpp
+1444088049 source:/home/pedro/Dev/Projects/cpp/cph/main.cpp
 	<iostream>
 	"include/CPH.h"
 
@@ -56,12 +56,11 @@
 1440727043 source:/home/pedro/Dev/Projects/cpp/cph/src/PercolationVerifier.cpp
 	"../include/PercolationVerifier.h"
 
-1443984912 /home/pedro/Dev/Projects/cpp/cph/include/PercolationVerifier.h
+1444090482 /home/pedro/Dev/Projects/cpp/cph/include/PercolationVerifier.h
 	<set>
 	<list>
 	<algorithm>
 	<iostream>
-	<vector>
 	<chrono>
 
 1440460456 source:/home/pedro/Dev/Projects/cpp/cph/src/utils/modularitylg.cpp
@@ -76,7 +75,7 @@
 	<iostream>
 	"utils.h"
 
-1443986585 /home/pedro/Dev/Projects/cpp/cph/include/CommunitiesFinder.h
+1444090993 /home/pedro/Dev/Projects/cpp/cph/include/CommunitiesFinder.h
 	<set>
 	<list>
 	<algorithm>
@@ -105,7 +104,7 @@
 1442976618 source:/home/pedro/Dev/Projects/cpp/cph/src/clique/bronkerbosh.cpp
 	"bronkerbosh.h"
 
-1443986441 /home/pedro/Dev/Projects/cpp/cph/include/CPH.h
+1444088967 /home/pedro/Dev/Projects/cpp/cph/include/CPH.h
 	<iostream>
 	"PercolationVerifier.h"
 	"CommunitiesFinder.h"
