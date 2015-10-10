@@ -315,7 +315,7 @@ void modulesUnion(unordered_map<unsigned,set<unsigned>*> *communities, LargeGrap
     cout << endl << "totalTimeForNeighbour: " << totalTimeForNeighbour;
 }
 
-unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cliquesList, LargeGraph *graph, double alpha) {
+unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cliquesList, LargeGraph *graph, double alpha, unsigned maxIterationsModules, unsigned maxIterationsNodes) {
 
     unordered_map<unsigned,set<unsigned>*> *communities = new unordered_map<unsigned,set<unsigned>*>;
 
@@ -367,11 +367,11 @@ unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cl
     nodesUnion(communities, graph, 1, alpha);
     long long int totalTimeNodesUnion = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
 
-    cout << endl << "Time spent building the CliqueTree: " << totalTimeBuildTree;
+    /*cout << endl << "Time spent building the CliqueTree: " << totalTimeBuildTree;
     cout << endl << "Time spent getting the Percolations: " << totalTimeGetPercolations;
     cout << endl << "Time spent creating the clique modules: " << totalTimeCreateCliqueModules;
     cout << endl << "Time spent in modules union: " << totalTimeModulesUnion;
-    cout << endl << "Time spent in nodes union: " << totalTimeNodesUnion << endl << endl;
+    cout << endl << "Time spent in nodes union: " << totalTimeNodesUnion << endl << endl;*/
 
     return communities;
 }

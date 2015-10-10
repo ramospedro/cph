@@ -6,7 +6,62 @@
 #include "CommunitiesFinder.h"
 #include "../src/graph/largegraph.h"
 #include "../src/clique/bronkerbosch.h"
+#include "../src/clique/bkcliqueremove.h"
 #include <chrono>
+#include <fstream>
+#include <cmath>
+
+string getFileName(string filePath) {
+    int positionLastSlash = filePath.find_last_of("/");
+    string fileNameWithExtension = filePath.substr(positionLastSlash+1);
+    int positionLastDot = fileNameWithExtension.find_last_of(".");
+    int numberCharsExtension = fileNameWithExtension.length() - positionLastDot;
+    int numberCharsFileName = fileNameWithExtension.length() - numberCharsExtension;
+
+    cout << numberCharsFileName;
+    string fileNameWithoutExtension = fileNameWithExtension.substr(0, numberCharsFileName);
+    return fileNameWithoutExtension;
+}
+
+void writeResults(string cliqueStrategy, string instance, unsigned n, unsigned m, long long int time, unordered_map<unsigned,set<unsigned>*> *communities, string fileDirectory) {
+
+    unsigned clusters = communities->size();
+    string partitions = "{";
+    string instanceName = getFileName(instance);
+    string fileName = "cph_results_" + cliqueStrategy + "_" + instanceName + ".txt";
+
+    bool firstPartition = true;
+
+    for (unordered_map<unsigned,set<unsigned>*>::iterator itCom = communities->begin(); itCom != communities->end(); itCom++) {
+
+        if (!firstPartition) {
+            partitions += ", ";
+        } else {
+            firstPartition = false;
+        }
+        partitions += "[";
+        bool first = true;
+        for (set<unsigned>::iterator itSet = itCom->second->begin(); itSet != itCom->second->end(); itSet++) {
+
+            if (!first) {
+                partitions += ", ";
+            } else {
+                first = false;
+            }
+            partitions += to_string(*itSet + 1);
+        }
+        partitions += "]";
+    }
+
+    string result = cliqueStrategy + ", ";
+    result += instanceName + ", " + to_string(n) + ", " + to_string(m) + ", " + to_string(time) + ", " + to_string(clusters);
+
+    ofstream file;
+    file.open(fileDirectory + fileName);
+    file << result;
+    file.close();
+
+}
 
 bool compareSetSize (set<unsigned> *first, set<unsigned> *second) {
     return first->size() < second->size();
@@ -40,32 +95,41 @@ list<set<unsigned>*> *CreateCliquesListOrderedBySize(list<set<unsigned>> *clique
     return cliquesOrderedBySize;
 }
 
-void detectCommunities(string netPath, unsigned minK, double alpha) {
+void detectCommunities(string netPath, unsigned minK, double alpha, unsigned cliqueAlg, unsigned maxIterationsModules, unsigned maxIterationsNodes, string resultsDirectory) {
 
     LargeGraph lg(netPath);
-    BronKerbosch cl(&lg);
+    list<set<unsigned>*> *cliquesList;
+    string cliqueStrategy;
+
+    BronKerbosch bkPivot(&lg);
+    BronKerbosch bkCliqueRemove(&lg);
 
     srand(time(NULL));
     chrono::system_clock::time_point before;
+
+    if (cliqueAlg == 1) {
+        cliqueStrategy = "BKPivot";
+        bkPivot.execute();
+        cliquesList = CreateCliquesListOrderedBySize(&bkPivot.cliques, minK);
+    } else if (cliqueAlg == 2 ) {
+        cliqueStrategy = "BKCliqueRemove";
+        bkCliqueRemove.execute();
+        cliquesList = CreateCliquesListOrderedBySize(&bkCliqueRemove.cliques, minK);
+    } else {
+        exit(0);
+    }
+
     before = chrono::system_clock::now();
 
-    cl.execute();
-
-    long long int totalTimeClique = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
-
-    before = chrono::system_clock::now();
-    list<set<unsigned>*> *cliquesList = CreateCliquesListOrderedBySize(&cl.cliques, minK);
-    long long int totalTimeConvertList = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
-
-    before = chrono::system_clock::now();
-
-    unordered_map<unsigned,set<unsigned>*> *communities = findCommunities(cliquesList, &lg, alpha);
+    unordered_map<unsigned,set<unsigned>*> *communities = findCommunities(cliquesList, &lg, alpha, maxIterationsModules, maxIterationsNodes);
 
     long long int totalTimeCPM = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
 
-    cout << endl << "Communities found" << endl << endl;
+    writeResults(cliqueStrategy, netPath, lg.numberOfNodes, lg.numberOfEdges, totalTimeCPM, communities, resultsDirectory);
 
-    /*unordered_map<unsigned,set<unsigned>*> *nodes = getCommunitiesOfEachNode(communities);
+    /*cout << endl << "Communities found" << endl << endl;
+
+    unordered_map<unsigned,set<unsigned>*> *nodes = getCommunitiesOfEachNode(communities);
 
     for (unordered_map<unsigned,set<unsigned>*>::iterator itCom = communities->begin(); itCom != communities->end(); itCom++) {
         cout << endl << endl << itCom->first << " - ";
@@ -106,19 +170,9 @@ void detectCommunities(string netPath, unsigned minK, double alpha) {
         }
     }*/
 
-    cout << endl << endl;
-
-    cout << "Communities found: " << communities->size();
-    cout << endl << endl << endl;
-    cout << "Time clique: " << totalTimeClique;
-    cout << endl;
-    cout << "Time CPM: " << totalTimeCPM;
-    cout << endl;
-    cout << "Time Convert List: " << totalTimeConvertList;
-
-
-
 
 }
+
+
 
 #endif // CPH_H_INCLUDED
