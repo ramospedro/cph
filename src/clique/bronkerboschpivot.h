@@ -39,5 +39,4 @@ class BronKerboschPivot: public CliqueAlgorithm
         unsigned wellKnownPivot(set<unsigned> &P, set<unsigned> &X);
 };
 
-
 #endif // BRONKERBOSCHPIVOT_H

@@ -232,10 +232,13 @@ void nodesUnion(unordered_map<unsigned,set<unsigned>*> *communities, LargeGraph 
                     }
 
                 }
+
             }
+
         }
 
         if (!iterationGeneratedAlterations) {
+            //cout << "sem alteracoes it nodes" + to_string(i);
             break;
         }
     }
@@ -299,20 +302,23 @@ void modulesUnion(unordered_map<unsigned,set<unsigned>*> *communities, LargeGrap
                             communities->erase(communityToBeMerged);
                             iterationGeneratedAlterations = true;
                         }
+
                     }
 
                 }
+
                 tempTime = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
                 totalTimeForNeighbour += tempTime;
             }
         }
 
         if (!iterationGeneratedAlterations) {
+            //cout << "sem alteracoes it modulos" + to_string(i);
             break;
         }
     }
 
-    cout << endl << "totalTimeForNeighbour: " << totalTimeForNeighbour;
+    //cout << endl << "totalTimeForNeighbour: " << totalTimeForNeighbour;
 }
 
 unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cliquesList, LargeGraph *graph, double alpha, unsigned maxIterationsModules, unsigned maxIterationsNodes) {
@@ -359,12 +365,13 @@ unordered_map<unsigned,set<unsigned>*> *findCommunities(list<set<unsigned>*> *cl
     createInitialModules(communities, percolations);
     long long int totalTimeCreateCliqueModules = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
 
+
     before = chrono::system_clock::now();
-    modulesUnion(communities, graph, 1, alpha);
+    modulesUnion(communities, graph, maxIterationsModules, alpha);
     long long int totalTimeModulesUnion = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
 
     before = chrono::system_clock::now();
-    nodesUnion(communities, graph, 1, alpha);
+    nodesUnion(communities, graph, maxIterationsNodes, alpha);
     long long int totalTimeNodesUnion = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
 
     /*cout << endl << "Time spent building the CliqueTree: " << totalTimeBuildTree;

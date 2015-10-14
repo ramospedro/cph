@@ -32,8 +32,6 @@ void LargeGraph::readFile(string path)
                 }
             }while(first == false);
 
-
-
             //reading nodes
             bool withoutDetails=false;
             unsigned int startsWith = this->numberOfNodes;
@@ -92,6 +90,8 @@ void LargeGraph::readFile(string path)
                     return;
                 }
             }
+
+
             //reading edges and arcs
             getline(file, line);
             vector<string> fields = Utils::splitString(line,' ');
@@ -105,7 +105,6 @@ void LargeGraph::readFile(string path)
             this->numberOfEdges=0;
             unsigned int v1, v2;
             do{
-
                 v1 = atoi(fields[0].c_str())-startsWith;
                 v2 = atoi(fields[1].c_str())-startsWith;
 
@@ -157,6 +156,7 @@ void LargeGraph::readFile(string path)
         }else{
             cout << "Unsupported extension!";
         }
+
 
 
     }

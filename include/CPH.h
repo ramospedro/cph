@@ -5,11 +5,12 @@
 #include "PercolationVerifier.h"
 #include "CommunitiesFinder.h"
 #include "../src/graph/largegraph.h"
-#include "../src/clique/bronkerbosch.h"
+#include "../src/clique/bronkerboschpivot.h"
 #include "../src/clique/bkcliqueremove.h"
 #include <chrono>
 #include <fstream>
 #include <cmath>
+#include "../src/clique/cliquesearcher.h"
 
 string getFileName(string filePath) {
     int positionLastSlash = filePath.find_last_of("/");
@@ -23,12 +24,14 @@ string getFileName(string filePath) {
     return fileNameWithoutExtension;
 }
 
-void writeResults(string cliqueStrategy, string instance, unsigned n, unsigned m, long long int time, unordered_map<unsigned,set<unsigned>*> *communities, string fileDirectory) {
+void writeResults(string cliqueStrategy, string instance, unsigned n, unsigned m, long long int time,
+    unordered_map<unsigned,set<unsigned>*> *communities, string fileDirectory, string experiment, int maxIterationsModules, int maxIterationsNodes, double alpha) {
 
     unsigned clusters = communities->size();
     string partitions = "{";
     string instanceName = getFileName(instance);
-    string fileName = "cph_results_" + cliqueStrategy + "_" + instanceName + ".txt";
+    string fileName = "cph_results_" + cliqueStrategy + "_" + instanceName + "_" +
+        to_string(maxIterationsModules) + "_" + to_string(maxIterationsNodes) + "_" + to_string(alpha) + "_" + experiment + ".txt";
 
     bool firstPartition = true;
 
@@ -53,8 +56,8 @@ void writeResults(string cliqueStrategy, string instance, unsigned n, unsigned m
         partitions += "]";
     }
 
-    string result = cliqueStrategy + ", ";
-    result += instanceName + ", " + to_string(n) + ", " + to_string(m) + ", " + to_string(time) + ", " + to_string(clusters);
+    partitions += "}";
+    string result = instanceName + ", " + to_string(n) + ", " + to_string(m) + ", " + to_string(time) + ", " + to_string(clusters) + ", " + partitions;
 
     ofstream file;
     file.open(fileDirectory + fileName);
@@ -95,29 +98,34 @@ list<set<unsigned>*> *CreateCliquesListOrderedBySize(list<set<unsigned>> *clique
     return cliquesOrderedBySize;
 }
 
-void detectCommunities(string netPath, unsigned minK, double alpha, unsigned cliqueAlg, unsigned maxIterationsModules, unsigned maxIterationsNodes, string resultsDirectory) {
+void detectCommunities(string netPath, unsigned minK, double alpha, unsigned cliqueAlg, unsigned maxIterationsModules, unsigned maxIterationsNodes, string resultsDirectory, string experiment) {
 
     LargeGraph lg(netPath);
+
     list<set<unsigned>*> *cliquesList;
     string cliqueStrategy;
 
-    BronKerbosch bkPivot(&lg);
-    BronKerbosch bkCliqueRemove(&lg);
+    CliqueSearcher *cliqueSearcher;
 
     srand(time(NULL));
     chrono::system_clock::time_point before;
 
+
     if (cliqueAlg == 1) {
         cliqueStrategy = "BKPivot";
-        bkPivot.execute();
-        cliquesList = CreateCliquesListOrderedBySize(&bkPivot.cliques, minK);
+        cliqueSearcher = new CliqueSearcher(new BronKerboschPivot(&lg));
     } else if (cliqueAlg == 2 ) {
         cliqueStrategy = "BKCliqueRemove";
-        bkCliqueRemove.execute();
-        cliquesList = CreateCliquesListOrderedBySize(&bkCliqueRemove.cliques, minK);
+        cliqueSearcher = new CliqueSearcher(new BKCliqueRemove(&lg));
     } else {
         exit(0);
     }
+
+    cliqueSearcher->findCliques();
+    list<set<unsigned>> cliques = cliqueSearcher->getCliqueList();
+    cliquesList = CreateCliquesListOrderedBySize(&cliques, minK);
+
+    //cout << "\nPassou os cliques";
 
     before = chrono::system_clock::now();
 
@@ -125,7 +133,7 @@ void detectCommunities(string netPath, unsigned minK, double alpha, unsigned cli
 
     long long int totalTimeCPM = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now()-before).count();
 
-    writeResults(cliqueStrategy, netPath, lg.numberOfNodes, lg.numberOfEdges, totalTimeCPM, communities, resultsDirectory);
+    writeResults(cliqueStrategy, netPath, lg.numberOfNodes, lg.numberOfEdges, totalTimeCPM, communities, resultsDirectory, experiment, maxIterationsModules, maxIterationsNodes, alpha);
 
     /*cout << endl << "Communities found" << endl << endl;
 

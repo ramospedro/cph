@@ -41,5 +41,4 @@ class CliqueAlgorithm
         CliqueAlgorithm();
 };
 
-
 #endif // CLIQUEALGORITHM_H

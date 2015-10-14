@@ -1,0 +1,49 @@
+#!/usr/bin/python3
+
+# Executor module. This module was written to facilitate the execution of large parameter intervals.
+from subprocess import call
+import pdb
+from multiprocessing import Pool, cpu_count
+
+#detect how many processes will run at the same time
+try:
+        workers = cpu_count()
+except NotImplementedError:
+        workers = 1
+
+#initialize pool of processes
+processes = []
+
+
+inst = [["lfr/100000A10.net", 1.0],\
+["lfr/100000A05.net", 1.0],\
+["lfr/100000A01.net", 1.0],\
+["lfr/10000A10.net", 1.0],\
+["lfr/10000A05.net", 1.0],\
+["lfr/10000A01.net", 1.0],\
+["lfr/1000A10.net", 1.0],\
+["lfr/1000A05.net", 1.0],\
+["lfr/1000A01.net", 1.0],\
+["lfr/100A10.net", 1.0],\
+["lfr/100A05.net", 1.0],\
+["lfr/100A01.net", 1.0],\
+["lfr/50A10.net", 1.0],\
+["lfr/50A05.net", 1.0],\
+["lfr/50A01.net", 1.0]]
+
+
+algs = ["./alg1", "./alg2"]
+
+for alg in algs
+	for ins in inst:
+		for exp in range(1,31):	
+			[instance, opt] = ins
+			processes.append([alg, instance, str(opt), str(exp)])
+# c:\> ./executavel normalizadas/karate.net 1.0 1
+
+print ("Total processes:{}".format(len(processes)),processes)
+
+#code to call the processes
+pool = Pool(processes=workers)
+result = pool.map(call,processes)
+print(result)

@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
     string maxIterationsModulesString = argv[4];
     string maxIterationsNodesString = argv[5];
     string resultsDirectory = argv[6];
+    string experiment = argv[7];
 
     float alpha = stod(alphaString);
     unsigned minK = 3;
@@ -24,7 +25,7 @@ int main(int argc, char *argv[])
     unsigned maxIterationsModules = stod(maxIterationsModulesString);
     unsigned maxIterationsNodes = stod(maxIterationsNodesString);
 
-    detectCommunities(netPath, minK, alpha, cliqueAlgorithm, maxIterationsModules, maxIterationsNodes, resultsDirectory);
+    detectCommunities(netPath, minK, alpha, cliqueAlgorithm, maxIterationsModules, maxIterationsNodes, resultsDirectory, experiment);
 
     return 0;
 }
